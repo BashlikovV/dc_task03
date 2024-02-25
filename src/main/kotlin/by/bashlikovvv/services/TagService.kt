@@ -6,7 +6,7 @@ import by.bashlikovvv.api.dto.response.TagDto
 
 interface TagService {
 
-    fun create(updateTagDto: CreateTagDto): TagDto?
+    fun create(createTagDto: CreateTagDto): TagDto?
 
     fun getAll(): List<TagDto?>
 

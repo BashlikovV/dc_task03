@@ -1,10 +1,10 @@
 package by.bashlikovvv.services.impl
 
-import by.bashlikovvv.api.dto.mappers.TagMapper
+import by.bashlikovvv.api.dto.mappers.CreateTagDtoToTagDtoMapper
+import by.bashlikovvv.api.dto.mappers.UpdateTagDtoToTagDtoMapper
 import by.bashlikovvv.api.dto.request.CreateTagDto
 import by.bashlikovvv.api.dto.request.UpdateTagDto
 import by.bashlikovvv.api.dto.response.TagDto
-import by.bashlikovvv.model.Tag
 import by.bashlikovvv.services.TagService
 import by.bashlikovvv.util.BaseRepository
 
@@ -17,13 +17,10 @@ class TagServiceImpl(
         } else {
             tagsRepository.getLastItem()?.id ?: return null
         }
-        val mapper = TagMapper(lastItemId + 1, createTagDto.tweetId)
-        val entity: Tag = mapper.mapToEntity(UpdateTagDto(
-            lastItemId,
-            createTagDto.tweetId,
-            createTagDto.name
-        ))
-        val savedEntity = tagsRepository.addItem(lastItemId + 1, mapper.mapToDto(entity))
+        val savedEntity = tagsRepository.addItem(
+            id = lastItemId + 1,
+            item = CreateTagDtoToTagDtoMapper(lastItemId + 1, createTagDto.name).mapFromEntity(createTagDto)
+        )
 
         return savedEntity
     }
@@ -37,10 +34,10 @@ class TagServiceImpl(
     }
 
     override fun update(tagId: Long, updateTagDto: UpdateTagDto): TagDto? {
-        val tweetId = tagsRepository.getItemById(tagId)?.second?.tweetId ?: return null
-        val mapper = TagMapper(tagId, tweetId)
-        val entity: Tag = mapper.mapToEntity(updateTagDto)
-        val savedEntity = tagsRepository.addItem(tagId, mapper.mapToDto(entity))
+        val savedEntity = tagsRepository.addItem(
+            id = tagId,
+            item = UpdateTagDtoToTagDtoMapper(updateTagDto.name).mapFromEntity(updateTagDto)
+        )
 
         return savedEntity
     }

@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 data class EditorDto(
     val id: Long,
     val login: String,
-    private val password: String,
-    private val firstname: String,
-    private val lastname: String
+    val password: String,
+    val firstname: String,
+    val lastname: String
 )

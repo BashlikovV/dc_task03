@@ -1,8 +1,7 @@
 package by.bashlikovvv.api.controllers.routings
 
-import by.bashlikovvv.api.dto.mappers.EditorMapper
 import by.bashlikovvv.api.dto.request.CreateEditorDto
-import by.bashlikovvv.model.Editor
+import by.bashlikovvv.api.dto.request.UpdateEditorDto
 import by.bashlikovvv.model.Response
 import by.bashlikovvv.services.EditorService
 import by.bashlikovvv.util.getWithCheck
@@ -109,18 +108,14 @@ private fun Route.getEditorById(editorsService: EditorService) {
 
 private fun Route.updateEditor(editorsService: EditorService) {
     put("/api/v1.0/editors") {
-        val editor: Editor = getWithCheck { call.receive() } ?: return@put call.respond(
+        val updateEditorDto: UpdateEditorDto = getWithCheck { call.receive() } ?: return@put call.respond(
             status = HttpStatusCode.BadRequest,
             message = Response(HttpStatusCode.BadRequest.value)
         )
-        val mapper = EditorMapper(editor.id)
 
         val updatedEditor = editorsService.update(
-            editorId = editor.id,
-            updateEditorDto = getWithCheck { mapper.mapFromEntity(editor) } ?: return@put call.respond(
-                status = HttpStatusCode.BadRequest,
-                message = Response(HttpStatusCode.BadRequest.value)
-            )
+            editorId = updateEditorDto.id,
+            updateEditorDto = updateEditorDto
         )
 
         respond(

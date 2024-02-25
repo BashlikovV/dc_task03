@@ -1,10 +1,10 @@
 package by.bashlikovvv.services.impl
 
-import by.bashlikovvv.api.dto.mappers.EditorMapper
+import by.bashlikovvv.api.dto.mappers.CreateEditorDtoToEditorDtoMapper
+import by.bashlikovvv.api.dto.mappers.UpdateEditorDtoToEditorDtoMapper
 import by.bashlikovvv.api.dto.request.CreateEditorDto
 import by.bashlikovvv.api.dto.request.UpdateEditorDto
 import by.bashlikovvv.api.dto.response.EditorDto
-import by.bashlikovvv.model.Editor
 import by.bashlikovvv.services.EditorService
 import by.bashlikovvv.util.BaseRepository
 
@@ -18,22 +18,19 @@ class EditorServiceImpl(
         } else {
             editorRepository.getLastItem()?.id ?: return null
         }
-        val mapper = EditorMapper(lastItemId + 1)
-        val entity: Editor = mapper.mapToEntity(UpdateEditorDto(
-            login = createEditorDto.login,
-            password = createEditorDto.password,
-            firstname = createEditorDto.firstname,
-            lastname = createEditorDto.lastname
-        ))
-        val savedEntity = editorRepository.addItem(lastItemId + 1, mapper.mapToDto(entity))
+        val mapper = CreateEditorDtoToEditorDtoMapper(lastItemId + 1)
+        val savedEntity = editorRepository.addItem(
+            id = lastItemId + 1,
+            mapper.mapFromEntity(createEditorDto)
+        )
 
         return savedEntity
     }
 
     override fun update(editorId: Long, updateEditorDto: UpdateEditorDto): EditorDto? {
-        val mapper = EditorMapper(editorId)
-        val entity: Editor = mapper.mapToEntity(updateEditorDto)
-        val savedEntity = editorRepository.addItem(editorId, mapper.mapToDto(entity))
+        val mapper = UpdateEditorDtoToEditorDtoMapper()
+        val editorDto: EditorDto = mapper.mapFromEntity(updateEditorDto)
+        val savedEntity = editorRepository.addItem(editorId, editorDto)
 
         return savedEntity
     }

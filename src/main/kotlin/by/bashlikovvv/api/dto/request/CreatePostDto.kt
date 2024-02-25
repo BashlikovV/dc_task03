@@ -4,8 +4,8 @@ import by.bashlikovvv.util.inRange
 import kotlinx.serialization.Serializable
 
 @Serializable
-class UpdatePostDto @Throws(IllegalStateException::class) constructor(
-    val id: Long,
+data class CreatePostDto @Throws(IllegalStateException::class) constructor(
+    val id: Long? = null,
     val tweetId: Long,
     val content: String
 ) {

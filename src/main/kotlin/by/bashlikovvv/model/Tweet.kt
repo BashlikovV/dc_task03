@@ -9,4 +9,4 @@ class Tweet(
     val content: String,
     val created: Timestamp,
     val modified: Timestamp
-) {  }
+)

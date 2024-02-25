@@ -1,14 +1,13 @@
 package by.bashlikovvv.services
 
 import by.bashlikovvv.api.dto.request.CreateEditorDto
-import by.bashlikovvv.api.dto.request.UpdateEditorDto
 import by.bashlikovvv.api.dto.response.EditorDto
 
 interface EditorService {
 
     fun create(createEditorDto: CreateEditorDto): EditorDto?
 
-    fun update(editorId: Long, updateEditorDto: UpdateEditorDto): EditorDto?
+    fun update(editorId: Long, updateEditorDto: by.bashlikovvv.api.dto.request.UpdateEditorDto): EditorDto?
 
     fun getById(editorId: Long): EditorDto?
 

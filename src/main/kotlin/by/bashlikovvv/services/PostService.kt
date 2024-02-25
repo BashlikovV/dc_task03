@@ -1,11 +1,12 @@
 package by.bashlikovvv.services
 
+import by.bashlikovvv.api.dto.request.CreatePostDto
 import by.bashlikovvv.api.dto.request.UpdatePostDto
 import by.bashlikovvv.api.dto.response.PostDto
 
 interface PostService {
 
-    fun create(updatePostDto: UpdatePostDto): PostDto?
+    fun create(createPostDto: CreatePostDto): PostDto?
 
     fun update(postId: Long, updatePostDto: UpdatePostDto): PostDto?
 

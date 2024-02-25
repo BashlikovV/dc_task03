@@ -1,32 +1,35 @@
 package by.bashlikovvv.services.impl
 
-import by.bashlikovvv.api.dto.mappers.PostMapper
+import by.bashlikovvv.api.dto.mappers.CreatePostDtoToPostDtoMapper
+import by.bashlikovvv.api.dto.mappers.UpdatePostDtoToPostDtoMapper
+import by.bashlikovvv.api.dto.request.CreatePostDto
 import by.bashlikovvv.api.dto.request.UpdatePostDto
 import by.bashlikovvv.api.dto.response.PostDto
-import by.bashlikovvv.model.Post
 import by.bashlikovvv.services.PostService
 import by.bashlikovvv.util.BaseRepository
 
 class PostServiceImpl(
     private val postRepository: BaseRepository<PostDto, Long>
 ) : PostService {
-    override fun create(updatePostDto: UpdatePostDto): PostDto? {
+    override fun create(createPostDto: CreatePostDto): PostDto? {
         val lastItemId = if (postRepository.data.isEmpty()) {
             -1
         } else {
             postRepository.getLastItem()?.id ?: return null
         }
-        val mapper = PostMapper(lastItemId + 1)
-        val entity: Post = mapper.mapToEntity(updatePostDto)
-        val savedEntity = postRepository.addItem(lastItemId + 1, mapper.mapToDto(entity))
+        val savedEntity = postRepository.addItem(
+            id = lastItemId + 1,
+            item = CreatePostDtoToPostDtoMapper(lastItemId + 1).mapFromEntity(createPostDto)
+        )
 
         return savedEntity
     }
 
     override fun update(postId: Long, updatePostDto: UpdatePostDto): PostDto? {
-        val mapper = PostMapper(postId)
-        val entity: Post = mapper.mapToEntity(updatePostDto)
-        val savedEntity = postRepository.addItem(postId, mapper.mapToDto(entity))
+        val savedEntity = postRepository.addItem(
+            id = postId,
+            item = UpdatePostDtoToPostDtoMapper().mapFromEntity(updatePostDto)
+        )
 
         return savedEntity
     }

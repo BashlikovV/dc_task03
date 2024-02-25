@@ -5,22 +5,15 @@ import kotlinx.serialization.Serializable
 import kotlin.jvm.Throws
 
 @Serializable
-class UpdateEditorDto {
-
-    @Serializable
-    val login: String
-
-    @Serializable
-    val password: String
-
-    @Serializable
-    val firstname: String
-
-    @Serializable
+class UpdateEditorDto @Throws(IllegalStateException::class) constructor(
+    val id: Long,
+    val login: String,
+    val password: String,
+    val firstname: String,
     val lastname: String
+) {
 
-    @Throws(IllegalStateException::class)
-    constructor(login: String, password: String, firstname: String, lastname: String) {
+    init {
         if (!login.inRange(2, 64)) {
             throw IllegalStateException()
         }
@@ -33,11 +26,6 @@ class UpdateEditorDto {
         if (!lastname.inRange(2, 64)) {
             throw IllegalStateException()
         }
-
-        this.login = login
-        this.password = password
-        this.firstname = firstname
-        this.lastname = lastname
     }
 
 }

@@ -1,10 +1,10 @@
 package by.bashlikovvv.services.impl
 
-import by.bashlikovvv.api.dto.mappers.TweetMapper
+import by.bashlikovvv.api.dto.mappers.CreateTweetDtoToTweetDtoMapper
+import by.bashlikovvv.api.dto.mappers.UpdateTweetDtoToTweetDtoMapper
 import by.bashlikovvv.api.dto.request.CreateTweetDto
 import by.bashlikovvv.api.dto.request.UpdateTweetDto
 import by.bashlikovvv.api.dto.response.TweetDto
-import by.bashlikovvv.model.Tweet
 import by.bashlikovvv.services.TweetService
 import by.bashlikovvv.util.BaseRepository
 import java.sql.Timestamp
@@ -18,21 +18,12 @@ class TweetServiceImpl(
         } else {
             tweetRepository.getLastItem()?.id ?: return null
         }
+
         val timeStamp = Timestamp(System.currentTimeMillis())
-        val mapper = TweetMapper(
-            editorId = createTweetDto.editorId,
+        val savedEntity = tweetRepository.addItem(
             id = lastItemId + 1,
-            created = timeStamp,
-            modified = timeStamp,
-            name = createTweetDto.name ?: ""
+            item = CreateTweetDtoToTweetDtoMapper(lastItemId + 1, timeStamp).mapFromEntity(createTweetDto)
         )
-        val entity: Tweet = mapper.mapToEntity(UpdateTweetDto(
-            editorId = createTweetDto.editorId,
-            title = createTweetDto.title,
-            content = createTweetDto.content,
-            name = createTweetDto.name
-        ))
-        val savedEntity = tweetRepository.addItem(lastItemId + 1, mapper.mapToDto(entity))
 
         return savedEntity
     }
@@ -50,17 +41,14 @@ class TweetServiceImpl(
     }
 
     override fun update(tweetId: Long, updateTweetDto: UpdateTweetDto): TweetDto? {
-        val tweet = tweetRepository.getItemById(tweetId)
-        tweet ?: return null
-        val mapper = TweetMapper(
-            editorId = updateTweetDto.editorId,
+        val tweetDto = tweetRepository.getItemById(tweetId)?.second
+        tweetDto ?: return null
+
+        val modified = Timestamp(System.currentTimeMillis())
+        val savedEntity = tweetRepository.addItem(
             id = tweetId,
-            created = tweet.second.created,
-            modified = Timestamp(System.currentTimeMillis()),
-            name = updateTweetDto.name ?: ""
+            item = UpdateTweetDtoToTweetDtoMapper(tweetDto, modified).mapFromEntity(updateTweetDto)
         )
-        val entity: Tweet = mapper.mapToEntity(updateTweetDto)
-        val savedEntity = tweetRepository.addItem(tweetId, mapper.mapToDto(entity))
 
         return savedEntity
     }

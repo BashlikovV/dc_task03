@@ -1,10 +1,8 @@
 package by.bashlikovvv.api.controllers.routings
 
-import by.bashlikovvv.api.dto.mappers.TagMapper
 import by.bashlikovvv.api.dto.request.CreateTagDto
 import by.bashlikovvv.api.dto.request.UpdateTagDto
 import by.bashlikovvv.model.Response
-import by.bashlikovvv.model.Tag
 import by.bashlikovvv.services.TagService
 import by.bashlikovvv.util.getWithCheck
 import by.bashlikovvv.util.respond
@@ -110,18 +108,13 @@ private fun Route.getTagById(tagsService: TagService) {
 
 private fun Route.updateTag(tagsService: TagService) {
     put("/api/v1.0/tags") {
-        val tag: UpdateTagDto = getWithCheck { call.receive() } ?: return@put call.respond(
+        val updateTagDto: UpdateTagDto = getWithCheck { call.receive() } ?: return@put call.respond(
             status = HttpStatusCode.BadRequest,
             message = Response(HttpStatusCode.BadRequest.value)
         )
-        val mapper = TagMapper(tag.id, tag.tweetId)
-
         val updatedTag = tagsService.update(
-            tagId = tag.id,
-            updateTagDto = getWithCheck { mapper.mapFromEntity(Tag(tag.id, tag.name)) } ?: return@put call.respond(
-                status = HttpStatusCode.BadRequest,
-                message = Response(HttpStatusCode.BadRequest.value)
-            )
+            tagId = updateTagDto.id,
+            updateTagDto = updateTagDto
         )
 
         respond(
