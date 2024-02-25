@@ -8,10 +8,10 @@ import kotlin.jvm.Throws
 class UpdatePostDto {
 
     @Serializable
-    private val tweetId: Long
+    val tweetId: Long
 
     @Serializable
-    private val content: String
+    val content: String
 
     @Throws(IllegalStateException::class)
     constructor(tweetId: Long, content: String) {

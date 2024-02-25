@@ -1,7 +1,10 @@
 package by.bashlikovvv.model
 
-class Post(
-    private val id: Long,
-    private val tweetId: Long,
-    private val content: String
-) {  }
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class Post(
+    val id: Long,
+    val tweetId: Long,
+    val content: String
+)

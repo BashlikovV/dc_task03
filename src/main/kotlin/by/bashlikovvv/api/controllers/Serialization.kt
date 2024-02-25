@@ -1,4 +1,4 @@
-package by.bashlikovvv.plugins
+package by.bashlikovvv.api.controllers
 
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*

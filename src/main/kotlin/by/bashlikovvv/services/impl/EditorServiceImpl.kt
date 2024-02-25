@@ -1,6 +1,7 @@
 package by.bashlikovvv.services.impl
 
 import by.bashlikovvv.api.dto.mappers.EditorMapper
+import by.bashlikovvv.api.dto.request.CreateEditorDto
 import by.bashlikovvv.api.dto.request.UpdateEditorDto
 import by.bashlikovvv.api.dto.response.EditorDto
 import by.bashlikovvv.model.Editor
@@ -11,14 +12,19 @@ class EditorServiceImpl(
     private val editorRepository: BaseRepository<EditorDto, Long>
 ) : EditorService {
 
-    override fun create(updateEditorDto: UpdateEditorDto): EditorDto? {
+    override fun create(createEditorDto: CreateEditorDto): EditorDto? {
         val lastItemId = if (editorRepository.data.isEmpty()) {
             -1
         } else {
             editorRepository.getLastItem()?.id ?: return null
         }
         val mapper = EditorMapper(lastItemId + 1)
-        val entity: Editor = mapper.mapToEntity(updateEditorDto)
+        val entity: Editor = mapper.mapToEntity(UpdateEditorDto(
+            login = createEditorDto.login,
+            password = createEditorDto.password,
+            firstname = createEditorDto.firstname,
+            lastname = createEditorDto.lastname
+        ))
         val savedEntity = editorRepository.addItem(lastItemId + 1, mapper.mapToDto(entity))
 
         return savedEntity

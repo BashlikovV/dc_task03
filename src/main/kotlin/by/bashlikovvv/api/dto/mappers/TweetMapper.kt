@@ -1,6 +1,6 @@
 package by.bashlikovvv.api.dto.mappers
 
-import by.bashlikovvv.api.dto.request.CreateTweetDto
+import by.bashlikovvv.api.dto.request.UpdateTweetDto
 import by.bashlikovvv.api.dto.response.TweetDto
 import by.bashlikovvv.model.Tweet
 import by.bashlikovvv.util.IMapper
@@ -11,25 +11,27 @@ class TweetMapper(
     private val editorId: Long,
     private val id: Long,
     private val created: Timestamp,
-    private val modified: Timestamp
-) : IMapper<Tweet, CreateTweetDto, TweetDto> {
+    private val modified: Timestamp,
+    private val name: String
+) : IMapper<Tweet, UpdateTweetDto, TweetDto> {
 
     @Throws(IllegalStateException::class)
-    override fun mapFromEntity(entity: Tweet): CreateTweetDto {
-        return CreateTweetDto(
+    override fun mapFromEntity(entity: Tweet): UpdateTweetDto {
+        return UpdateTweetDto(
             editorId = editorId,
             title = entity.title,
-            content = entity.content
+            content = entity.content,
+            name = name
         )
     }
 
     @Throws(IllegalStateException::class)
-    override fun mapToEntity(domain: CreateTweetDto): Tweet {
+    override fun mapToEntity(domain: UpdateTweetDto): Tweet {
         return Tweet(
             id = id,
             editorId = domain.editorId,
             title = domain.title,
-            content = domain.content,
+            content = domain.content ?: "",
             created = created,
             modified = modified
         )

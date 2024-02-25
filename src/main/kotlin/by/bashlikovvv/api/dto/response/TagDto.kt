@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class TagDto(
-    private val id: Long,
+    val id: Long,
+    val tweetId: Long,
     private val name: String
 )

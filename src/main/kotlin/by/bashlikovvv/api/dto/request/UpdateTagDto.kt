@@ -5,16 +5,14 @@ import kotlinx.serialization.Serializable
 import kotlin.jvm.Throws
 
 @Serializable
-class UpdateTagDto {
+class UpdateTagDto @Throws(IllegalStateException::class) constructor(
+    val id: Long,
+    val tweetId: Long,
+    val name: String
+) {
 
-    @Serializable
-    private val name: String
-
-    @Throws(IllegalStateException::class)
-    constructor(name: String) {
+    init {
         if (!name.inRange(2, 32)) { throw IllegalStateException() }
-
-        this.name = name
     }
 
 }

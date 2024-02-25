@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class PostDto(
-    private val id: Long,
+    val id: Long,
     private val tweetId: Long,
     private val content: String
 )

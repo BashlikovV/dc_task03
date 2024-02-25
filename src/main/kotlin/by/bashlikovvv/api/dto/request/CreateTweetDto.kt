@@ -1,18 +1,11 @@
 package by.bashlikovvv.api.dto.request
 
-import by.bashlikovvv.util.inRange
 import kotlinx.serialization.Serializable
 
 @Serializable
-class CreateTweetDto @Throws(IllegalStateException::class) constructor(
-    @Serializable val editorId: Long,
-    @Serializable val title: String,
-    @Serializable val content: String
-) {
-
-    init {
-        if (!title.inRange(2, 64)) { throw IllegalStateException() }
-        if (!content.inRange(4, 2048)) { throw IllegalStateException() }
-    }
-
-}
+data class CreateTweetDto(
+    val editorId: Long,
+    val title: String,
+    val content: String? = null,
+    val name: String? = null
+)

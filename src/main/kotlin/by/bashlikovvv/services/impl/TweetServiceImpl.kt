@@ -2,6 +2,7 @@ package by.bashlikovvv.services.impl
 
 import by.bashlikovvv.api.dto.mappers.TweetMapper
 import by.bashlikovvv.api.dto.request.CreateTweetDto
+import by.bashlikovvv.api.dto.request.UpdateTweetDto
 import by.bashlikovvv.api.dto.response.TweetDto
 import by.bashlikovvv.model.Tweet
 import by.bashlikovvv.services.TweetService
@@ -22,9 +23,15 @@ class TweetServiceImpl(
             editorId = createTweetDto.editorId,
             id = lastItemId + 1,
             created = timeStamp,
-            modified = timeStamp
+            modified = timeStamp,
+            name = createTweetDto.name ?: ""
         )
-        val entity: Tweet = mapper.mapToEntity(createTweetDto)
+        val entity: Tweet = mapper.mapToEntity(UpdateTweetDto(
+            editorId = createTweetDto.editorId,
+            title = createTweetDto.title,
+            content = createTweetDto.content,
+            name = createTweetDto.name
+        ))
         val savedEntity = tweetRepository.addItem(lastItemId + 1, mapper.mapToDto(entity))
 
         return savedEntity
@@ -42,16 +49,17 @@ class TweetServiceImpl(
         return tweetRepository.data.find { it.second.editorId == editorId }?.second
     }
 
-    override fun update(tweetId: Long, createTweetDto: CreateTweetDto): TweetDto? {
+    override fun update(tweetId: Long, updateTweetDto: UpdateTweetDto): TweetDto? {
         val tweet = tweetRepository.getItemById(tweetId)
         tweet ?: return null
         val mapper = TweetMapper(
-            editorId = createTweetDto.editorId,
+            editorId = updateTweetDto.editorId,
             id = tweetId,
             created = tweet.second.created,
-            modified = Timestamp(System.currentTimeMillis())
+            modified = Timestamp(System.currentTimeMillis()),
+            name = updateTweetDto.name ?: ""
         )
-        val entity: Tweet = mapper.mapToEntity(createTweetDto)
+        val entity: Tweet = mapper.mapToEntity(updateTweetDto)
         val savedEntity = tweetRepository.addItem(tweetId, mapper.mapToDto(entity))
 
         return savedEntity

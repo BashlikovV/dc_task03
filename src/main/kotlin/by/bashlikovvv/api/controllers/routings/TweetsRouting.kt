@@ -1,4 +1,4 @@
-package by.bashlikovvv.plugins
+package by.bashlikovvv.api.controllers.routings
 
 import by.bashlikovvv.api.dto.request.CreateTweetDto
 import by.bashlikovvv.api.dto.request.UpdateTweetDto
@@ -108,16 +108,17 @@ private fun Route.getTweetById(tweetsService: TweetService) {
 
 private fun Route.updateTweet(tweetsService: TweetService) {
     put("/api/v1.0/tweets") {
-        val createTweetDto: UpdateTweetDto = getWithCheck { call.receive() } ?: return@put call.respond(
+        val updateTweetDto: UpdateTweetDto = getWithCheck { call.receive() } ?: return@put call.respond(
             status = HttpStatusCode.BadRequest,
             message = Response(HttpStatusCode.BadRequest.value)
         )
         val updatedTweet = tweetsService.update(
-            tweetId = createTweetDto.editorId,
-            createTweetDto = CreateTweetDto(
-                createTweetDto.editorId,
-                createTweetDto.title,
-                createTweetDto.content
+            tweetId = updateTweetDto.editorId,
+            updateTweetDto = UpdateTweetDto(
+                editorId = updateTweetDto.editorId,
+                title = updateTweetDto.title,
+                content = updateTweetDto.content,
+                name = updateTweetDto.name
             )
         )
 
