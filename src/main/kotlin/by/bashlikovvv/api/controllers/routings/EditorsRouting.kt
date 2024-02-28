@@ -2,7 +2,7 @@ package by.bashlikovvv.api.controllers.routings
 
 import by.bashlikovvv.api.dto.request.CreateEditorDto
 import by.bashlikovvv.api.dto.request.UpdateEditorDto
-import by.bashlikovvv.model.Response
+import by.bashlikovvv.domain.model.Response
 import by.bashlikovvv.services.EditorService
 import by.bashlikovvv.util.getWithCheck
 import by.bashlikovvv.util.respond
@@ -24,7 +24,7 @@ fun Route.editorsRouting() {
 }
 
 private fun Route.getEditors(editorsService: EditorService) {
-    get("/api/v1.0/editors") {
+    get("/editors") {
         val editors = editorsService.getAll()
 
         respond(
@@ -38,7 +38,7 @@ private fun Route.getEditors(editorsService: EditorService) {
 }
 
 private fun Route.createEditor(editorsService: EditorService) {
-    post("/api/v1.0/editors") {
+    post("/editors") {
         val editor: CreateEditorDto = call.receive()
         val addedEditor = getWithCheck { editorsService.create(editor) }
 
@@ -61,7 +61,7 @@ private fun Route.createEditor(editorsService: EditorService) {
 }
 
 private fun Route.deleteEditorById(editorsService: EditorService) {
-    delete("/api/v1.0/editors/{id?}") {
+    delete("/editors/{id?}") {
         val id = call.parameters["id"] ?: return@delete call.respond(
             status = HttpStatusCode.BadRequest,
             message = Response(HttpStatusCode.BadRequest.value)
@@ -84,7 +84,7 @@ private fun Route.deleteEditorById(editorsService: EditorService) {
 }
 
 private fun Route.getEditorById(editorsService: EditorService) {
-    get("/api/v1.0/editors/{id?}") {
+    get("/editors/{id?}") {
         val id = call.parameters["id"] ?: return@get call.respond(
             status = HttpStatusCode.BadRequest,
             message = Response(HttpStatusCode.BadRequest.value)
@@ -107,7 +107,7 @@ private fun Route.getEditorById(editorsService: EditorService) {
 }
 
 private fun Route.updateEditor(editorsService: EditorService) {
-    put("/api/v1.0/editors") {
+    put("/editors") {
         val updateEditorDto: UpdateEditorDto = getWithCheck { call.receive() } ?: return@put call.respond(
             status = HttpStatusCode.BadRequest,
             message = Response(HttpStatusCode.BadRequest.value)

@@ -5,11 +5,11 @@ import by.bashlikovvv.api.dto.mappers.UpdateTagDtoToTagDtoMapper
 import by.bashlikovvv.api.dto.request.CreateTagDto
 import by.bashlikovvv.api.dto.request.UpdateTagDto
 import by.bashlikovvv.api.dto.response.TagDto
+import by.bashlikovvv.domain.repository.ITagsRepositoryI
 import by.bashlikovvv.services.TagService
-import by.bashlikovvv.util.BaseRepository
 
 class TagServiceImpl(
-    private val tagsRepository: BaseRepository<TagDto, Long>
+    private val tagsRepository: ITagsRepositoryI
 ) : TagService {
     override fun create(createTagDto: CreateTagDto): TagDto? {
         val lastItemId = if (tagsRepository.data.isEmpty()) {
@@ -19,7 +19,10 @@ class TagServiceImpl(
         }
         val savedEntity = tagsRepository.addItem(
             id = lastItemId + 1,
-            item = CreateTagDtoToTagDtoMapper(lastItemId + 1, createTagDto.name).mapFromEntity(createTagDto)
+            item = CreateTagDtoToTagDtoMapper(
+                id = lastItemId + 1,
+                name = createTagDto.name
+            ).mapFromEntity(createTagDto)
         )
 
         return savedEntity

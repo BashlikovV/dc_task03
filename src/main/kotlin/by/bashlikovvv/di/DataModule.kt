@@ -4,7 +4,10 @@ import by.bashlikovvv.api.dto.response.EditorDto
 import by.bashlikovvv.api.dto.response.PostDto
 import by.bashlikovvv.api.dto.response.TagDto
 import by.bashlikovvv.api.dto.response.TweetDto
-import by.bashlikovvv.util.BaseRepository
+import by.bashlikovvv.domain.repository.IEditorsRepositoryI
+import by.bashlikovvv.domain.repository.IPostsRepositoryI
+import by.bashlikovvv.domain.repository.ITagsRepositoryI
+import by.bashlikovvv.domain.repository.ITweetsRepositoryI
 import org.koin.core.qualifier.StringQualifier
 import org.koin.dsl.module
 
@@ -15,8 +18,8 @@ val tagsRepositoryQualifier = StringQualifier("tags_repository")
 
 val dataModule = module {
 
-    single<BaseRepository<EditorDto, Long>>(editorsRepositoryQualifier) {
-        object : BaseRepository<EditorDto, Long> {
+    single<IEditorsRepositoryI>(editorsRepositoryQualifier) {
+        object : IEditorsRepositoryI {
             override val data: MutableList<Pair<Long, EditorDto>> = mutableListOf()
 
             override fun getLastItem(): EditorDto? {
@@ -42,8 +45,8 @@ val dataModule = module {
         }
     }
 
-    single<BaseRepository<TweetDto, Long>>(tweetsRepositoryQualifier) {
-        object : BaseRepository<TweetDto, Long> {
+    single<ITweetsRepositoryI>(tweetsRepositoryQualifier) {
+        object : ITweetsRepositoryI {
             override val data: MutableList<Pair<Long, TweetDto>> = mutableListOf()
 
             override fun getLastItem(): TweetDto? {
@@ -69,8 +72,8 @@ val dataModule = module {
         }
     }
 
-    single<BaseRepository<PostDto, Long>>(postsRepositoryQualifier) {
-        object : BaseRepository<PostDto, Long> {
+    single<IPostsRepositoryI>(postsRepositoryQualifier) {
+        object : IPostsRepositoryI {
             override val data: MutableList<Pair<Long, PostDto>> = mutableListOf()
 
             override fun getLastItem(): PostDto? {
@@ -96,8 +99,8 @@ val dataModule = module {
         }
     }
 
-    single<BaseRepository<TagDto, Long>>(tagsRepositoryQualifier) {
-        object : BaseRepository<TagDto, Long> {
+    single<ITagsRepositoryI>(tagsRepositoryQualifier) {
+        object : ITagsRepositoryI {
             override val data: MutableList<Pair<Long, TagDto>> = mutableListOf()
 
             override fun getLastItem(): TagDto? {

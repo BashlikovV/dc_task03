@@ -5,11 +5,11 @@ import by.bashlikovvv.api.dto.mappers.UpdatePostDtoToPostDtoMapper
 import by.bashlikovvv.api.dto.request.CreatePostDto
 import by.bashlikovvv.api.dto.request.UpdatePostDto
 import by.bashlikovvv.api.dto.response.PostDto
+import by.bashlikovvv.domain.repository.IPostsRepositoryI
 import by.bashlikovvv.services.PostService
-import by.bashlikovvv.util.BaseRepository
 
 class PostServiceImpl(
-    private val postRepository: BaseRepository<PostDto, Long>
+    private val postRepository: IPostsRepositoryI
 ) : PostService {
     override fun create(createPostDto: CreatePostDto): PostDto? {
         val lastItemId = if (postRepository.data.isEmpty()) {

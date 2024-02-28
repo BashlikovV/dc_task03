@@ -1,4 +1,4 @@
-package by.bashlikovvv.api.controllers
+package by.bashlikovvv.data
 
 import kotlinx.coroutines.*
 import kotlinx.serialization.Serializable

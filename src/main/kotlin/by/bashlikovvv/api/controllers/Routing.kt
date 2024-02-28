@@ -13,9 +13,11 @@ fun Application.configureRouting() {
         get("/") {
             call.respondText("Hello World!")
         }
-        editorsRouting()
-        tweetsRouting()
-        postsRouting()
-        tagsRouting()
+        route("/api/v1.0") {
+            editorsRouting()
+            tweetsRouting()
+            postsRouting()
+            tagsRouting()
+        }
     }
 }

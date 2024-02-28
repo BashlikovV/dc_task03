@@ -1,6 +1,6 @@
-package by.bashlikovvv.util
+package by.bashlikovvv.domain.repository
 
-interface BaseRepository<T, Index : Comparable<Index>> {
+interface IBaseRepository<T, Index : Comparable<Index>> {
 
     val data: MutableList<Pair<Index, T>>
 

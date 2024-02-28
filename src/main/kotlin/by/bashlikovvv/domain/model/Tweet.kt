@@ -1,4 +1,4 @@
-package by.bashlikovvv.model
+package by.bashlikovvv.domain.model
 
 import java.sql.Timestamp
 

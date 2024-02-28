@@ -1,4 +1,4 @@
-package by.bashlikovvv.api.controllers
+package by.bashlikovvv.data
 
 import io.ktor.http.*
 import io.ktor.server.application.*

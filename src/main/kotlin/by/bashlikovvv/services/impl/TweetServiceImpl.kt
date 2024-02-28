@@ -5,12 +5,12 @@ import by.bashlikovvv.api.dto.mappers.UpdateTweetDtoToTweetDtoMapper
 import by.bashlikovvv.api.dto.request.CreateTweetDto
 import by.bashlikovvv.api.dto.request.UpdateTweetDto
 import by.bashlikovvv.api.dto.response.TweetDto
+import by.bashlikovvv.domain.repository.ITweetsRepositoryI
 import by.bashlikovvv.services.TweetService
-import by.bashlikovvv.util.BaseRepository
 import java.sql.Timestamp
 
 class TweetServiceImpl(
-    private val tweetRepository: BaseRepository<TweetDto, Long>
+    private val tweetRepository: ITweetsRepositoryI
 ) : TweetService {
     override fun create(createTweetDto: CreateTweetDto): TweetDto? {
         val lastItemId = if (tweetRepository.data.isEmpty()) {

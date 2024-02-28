@@ -10,7 +10,6 @@ class UpdateTagDtoToTagDtoMapper(
     override fun mapFromEntity(entity: UpdateTagDto): TagDto {
         return TagDto(
             id = entity.id,
-            tweetId = entity.tweetId,
             name = entity.name
         )
     }
@@ -18,7 +17,6 @@ class UpdateTagDtoToTagDtoMapper(
     override fun mapToEntity(domain: TagDto): UpdateTagDto {
         return UpdateTagDto(
             id = domain.id,
-            tweetId = domain.tweetId,
             name = name
         )
     }

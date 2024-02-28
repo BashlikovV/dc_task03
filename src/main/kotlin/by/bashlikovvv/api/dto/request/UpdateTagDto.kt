@@ -7,7 +7,6 @@ import kotlin.jvm.Throws
 @Serializable
 class UpdateTagDto @Throws(IllegalStateException::class) constructor(
     val id: Long,
-    val tweetId: Long,
     val name: String
 ) {
 

@@ -2,7 +2,7 @@ package by.bashlikovvv.api.controllers.routings
 
 import by.bashlikovvv.api.dto.request.CreateTagDto
 import by.bashlikovvv.api.dto.request.UpdateTagDto
-import by.bashlikovvv.model.Response
+import by.bashlikovvv.domain.model.Response
 import by.bashlikovvv.services.TagService
 import by.bashlikovvv.util.getWithCheck
 import by.bashlikovvv.util.respond
@@ -24,7 +24,7 @@ fun Route.tagsRouting() {
 }
 
 private fun Route.getTags(tagsService: TagService) {
-    get("/api/v1.0/tags") {
+    get("/tags") {
         val tags = tagsService.getAll()
 
         respond(
@@ -38,7 +38,7 @@ private fun Route.getTags(tagsService: TagService) {
 }
 
 private fun Route.createTag(tagsService: TagService) {
-    post("/api/v1.0/tags") {
+    post("/tags") {
         val createTagDto: CreateTagDto = call.receive()
         val addedTag = getWithCheck { tagsService.create(createTagDto) }
 
@@ -61,7 +61,7 @@ private fun Route.createTag(tagsService: TagService) {
 }
 
 private fun Route.deleteTagById(tagsService: TagService) {
-    delete("/api/v1.0/tags/{id?}") {
+    delete("/tags/{id?}") {
         val id = call.parameters["id"] ?: return@delete call.respond(
             status = HttpStatusCode.BadRequest,
             message = Response(HttpStatusCode.BadRequest.value)
@@ -84,7 +84,7 @@ private fun Route.deleteTagById(tagsService: TagService) {
 }
 
 private fun Route.getTagById(tagsService: TagService) {
-    get("/api/v1.0/tags/{id?}") {
+    get("/tags/{id?}") {
         val id = call.parameters["id"] ?: return@get call.respond(
             status = HttpStatusCode.BadRequest,
             message = Response(HttpStatusCode.BadRequest.value)
@@ -107,7 +107,7 @@ private fun Route.getTagById(tagsService: TagService) {
 }
 
 private fun Route.updateTag(tagsService: TagService) {
-    put("/api/v1.0/tags") {
+    put("/tags") {
         val updateTagDto: UpdateTagDto = getWithCheck { call.receive() } ?: return@put call.respond(
             status = HttpStatusCode.BadRequest,
             message = Response(HttpStatusCode.BadRequest.value)

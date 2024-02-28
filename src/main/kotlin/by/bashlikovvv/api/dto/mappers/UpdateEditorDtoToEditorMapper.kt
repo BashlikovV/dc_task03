@@ -1,7 +1,7 @@
 package by.bashlikovvv.api.dto.mappers
 
 import by.bashlikovvv.api.dto.request.UpdateEditorDto
-import by.bashlikovvv.model.Editor
+import by.bashlikovvv.domain.model.Editor
 import by.bashlikovvv.util.IMapper
 
 class UpdateEditorDtoToEditorMapper : IMapper<UpdateEditorDto, Editor> {

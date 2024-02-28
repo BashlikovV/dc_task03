@@ -2,7 +2,7 @@ package by.bashlikovvv.api.controllers.routings
 
 import by.bashlikovvv.api.dto.request.CreatePostDto
 import by.bashlikovvv.api.dto.request.UpdatePostDto
-import by.bashlikovvv.model.Response
+import by.bashlikovvv.domain.model.Response
 import by.bashlikovvv.services.PostService
 import by.bashlikovvv.util.getWithCheck
 import by.bashlikovvv.util.respond
@@ -24,7 +24,7 @@ fun Route.postsRouting() {
 }
 
 private fun Route.getPosts(postsService: PostService) {
-    get("/api/v1.0/posts") {
+    get("/posts") {
         val posts = postsService.getAll()
 
         respond(
@@ -38,7 +38,7 @@ private fun Route.getPosts(postsService: PostService) {
 }
 
 private fun Route.createPost(postsService: PostService) {
-    post("/api/v1.0/posts") {
+    post("/posts") {
         val post: CreatePostDto = call.receive()
         val addedPost = getWithCheck { postsService.create(post) }
 
@@ -61,7 +61,7 @@ private fun Route.createPost(postsService: PostService) {
 }
 
 private fun Route.deletePostById(postsService: PostService) {
-    delete("/api/v1.0/posts/{id?}") {
+    delete("/posts/{id?}") {
         val id = call.parameters["id"] ?: return@delete call.respond(
             status = HttpStatusCode.BadRequest,
             message = Response(HttpStatusCode.BadRequest.value)
@@ -84,7 +84,7 @@ private fun Route.deletePostById(postsService: PostService) {
 }
 
 private fun Route.getPostById(postsService: PostService) {
-    get("/api/v1.0/posts/{id?}") {
+    get("/posts/{id?}") {
         val id = call.parameters["id"] ?: return@get call.respond(
             status = HttpStatusCode.BadRequest,
             message = Response(HttpStatusCode.BadRequest.value)
@@ -107,7 +107,7 @@ private fun Route.getPostById(postsService: PostService) {
 }
 
 private fun Route.updatePost(postsService: PostService) {
-    put("/api/v1.0/posts") {
+    put("/posts") {
         val updatePostDto: UpdatePostDto = getWithCheck { call.receive() } ?: return@put call.respond(
             status = HttpStatusCode.BadRequest,
             message = Response(HttpStatusCode.BadRequest.value)

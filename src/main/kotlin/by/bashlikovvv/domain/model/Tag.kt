@@ -1,4 +1,4 @@
-package by.bashlikovvv.model
+package by.bashlikovvv.domain.model
 
 class Tag(
     val id: Long,

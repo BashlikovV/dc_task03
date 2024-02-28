@@ -11,15 +11,11 @@ class CreateTagDtoToTagDtoMapper(
     override fun mapFromEntity(entity: CreateTagDto): TagDto {
         return TagDto(
             id = id,
-            tweetId = entity.tweetId,
             name = entity.name
         )
     }
 
     override fun mapToEntity(domain: TagDto): CreateTagDto {
-        return CreateTagDto(
-            tweetId = domain.tweetId,
-            name = name
-        )
+        return CreateTagDto(name = name)
     }
 }
