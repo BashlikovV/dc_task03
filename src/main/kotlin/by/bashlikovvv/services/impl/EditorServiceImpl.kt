@@ -5,11 +5,11 @@ import by.bashlikovvv.api.dto.mappers.UpdateEditorDtoToEditorDtoMapper
 import by.bashlikovvv.api.dto.request.CreateEditorDto
 import by.bashlikovvv.api.dto.request.UpdateEditorDto
 import by.bashlikovvv.api.dto.response.EditorDto
-import by.bashlikovvv.domain.repository.IEditorsRepositoryI
+import by.bashlikovvv.domain.repository.IEditorsRepository
 import by.bashlikovvv.services.EditorService
 
 class EditorServiceImpl(
-    private val editorRepository: IEditorsRepositoryI
+    private val editorRepository: IEditorsRepository
 ) : EditorService {
 
     override fun create(createEditorDto: CreateEditorDto): EditorDto? {

@@ -1,9 +1,9 @@
 package by.bashlikovvv.di
 
-import by.bashlikovvv.domain.repository.IEditorsRepositoryI
-import by.bashlikovvv.domain.repository.IPostsRepositoryI
-import by.bashlikovvv.domain.repository.ITagsRepositoryI
-import by.bashlikovvv.domain.repository.ITweetsRepositoryI
+import by.bashlikovvv.domain.repository.IEditorsRepository
+import by.bashlikovvv.domain.repository.IPostsRepository
+import by.bashlikovvv.domain.repository.ITagsRepository
+import by.bashlikovvv.domain.repository.ITweetsRepository
 import by.bashlikovvv.services.EditorService
 import by.bashlikovvv.services.PostService
 import by.bashlikovvv.services.TagService
@@ -17,25 +17,25 @@ import org.koin.dsl.module
 val appModule = module {
 
     single<EditorService> {
-        val repository: IEditorsRepositoryI = get(editorsRepositoryQualifier)
+        val repository: IEditorsRepository = get(editorsRepositoryQualifier)
 
         EditorServiceImpl(repository)
     }
 
     single<TweetService> {
-        val repository: ITweetsRepositoryI = get(tweetsRepositoryQualifier)
+        val repository: ITweetsRepository = get(tweetsRepositoryQualifier)
 
         TweetServiceImpl(repository)
     }
 
     single<PostService> {
-        val repository: IPostsRepositoryI = get(postsRepositoryQualifier)
+        val repository: IPostsRepository = get(postsRepositoryQualifier)
 
         PostServiceImpl(repository)
     }
 
     single<TagService> {
-        val repository: ITagsRepositoryI = get(tagsRepositoryQualifier)
+        val repository: ITagsRepository = get(tagsRepositoryQualifier)
 
         TagServiceImpl(repository)
     }
