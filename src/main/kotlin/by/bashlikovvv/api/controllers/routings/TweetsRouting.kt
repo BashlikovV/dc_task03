@@ -39,23 +39,16 @@ private fun Route.getTweets(tweetService: TweetService) {
 
 private fun Route.createTweet(tweetsService: TweetService) {
     post("/tweets") {
-        val tweet: CreateTweetDto = call.receive()
-        val addedTweet = getWithCheck { tweetsService.create(tweet) }
+        val tweet: CreateTweetDto = getWithCheck { call.receive() } ?: return@post call.respond(
+            status = HttpStatusCode.BadRequest, Response(HttpStatusCode.BadRequest.value)
+        )
+        val addedTweet = getWithCheck { tweetsService.create(tweet) } ?: return@post call.respond(
+            status = HttpStatusCode.Forbidden, Response(HttpStatusCode.Forbidden.value)
+        )
 
-        respond(
-            isCorrect = { addedTweet != null },
-            onCorrect = {
-                call.respond(
-                    status = HttpStatusCode.Created,
-                    message = addedTweet!!
-                )
-            },
-            onIncorrect = {
-                call.respond(
-                    status = HttpStatusCode.BadRequest,
-                    message = Response(HttpStatusCode.BadRequest.value)
-                )
-            }
+        call.respond(
+            status = HttpStatusCode.Created,
+            message = addedTweet
         )
     }
 }

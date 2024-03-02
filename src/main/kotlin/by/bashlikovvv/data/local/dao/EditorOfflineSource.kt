@@ -14,7 +14,7 @@ class EditorOfflineSource(private val connection: Connection) {
         private const val CREATE_TABLE_EDITORS =
             "CREATE TABLE ${EditorsTable.TABLE_NAME} (" +
                     "${EditorsTable.COLUMN_ID} SERIAL PRIMARY KEY, " +
-                    "${EditorsTable.COLUMN_LOGIN} VARCHAR(64), " +
+                    "${EditorsTable.COLUMN_LOGIN} VARCHAR(64) UNIQUE, " +
                     "${EditorsTable.COLUMN_PASSWORD} VARCHAR(128), " +
                     "${EditorsTable.COLUMN_FIRSTNAME} VARCHAR(64), " +
                     "${EditorsTable.COLUMN_LASTNAME} VARCHAR(64)" +

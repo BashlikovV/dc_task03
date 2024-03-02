@@ -39,23 +39,16 @@ private fun Route.getPosts(postsService: PostService) {
 
 private fun Route.createPost(postsService: PostService) {
     post("/posts") {
-        val post: CreatePostDto = call.receive()
-        val addedPost = getWithCheck { postsService.create(post) }
+        val post: CreatePostDto = getWithCheck { call.receive() } ?: return@post call.respond(
+            status = HttpStatusCode.BadRequest, Response(HttpStatusCode.BadRequest.value)
+        )
+        val addedPost = getWithCheck { postsService.create(post) } ?: return@post call.respond(
+            status = HttpStatusCode.Forbidden, Response(HttpStatusCode.Forbidden.value)
+        )
 
-        respond(
-            isCorrect = { addedPost != null },
-            onCorrect = {
-                call.respond(
-                    status = HttpStatusCode.Created,
-                    message = addedPost!!
-                )
-            },
-            onIncorrect = {
-                call.respond(
-                    status = HttpStatusCode.BadRequest,
-                    message = Response(HttpStatusCode.BadRequest.value)
-                )
-            }
+        call.respond(
+            status = HttpStatusCode.Created,
+            message = addedPost
         )
     }
 }

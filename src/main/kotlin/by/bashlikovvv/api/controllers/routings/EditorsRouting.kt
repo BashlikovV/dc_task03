@@ -39,23 +39,17 @@ private fun Route.getEditors(editorsService: EditorService) {
 
 private fun Route.createEditor(editorsService: EditorService) {
     post("/editors") {
-        val editor: CreateEditorDto = call.receive()
-        val addedEditor = getWithCheck { editorsService.create(editor) }
+        val createEditorDto: CreateEditorDto? = getWithCheck { call.receive() }
+        createEditorDto ?: return@post call.respond(
+            status = HttpStatusCode.BadRequest, Response(HttpStatusCode.BadRequest.value)
+        )
+        val addedEditor = getWithCheck { editorsService.create(createEditorDto) } ?: return@post call.respond(
+            status = HttpStatusCode.Forbidden, Response(HttpStatusCode.Forbidden.value)
+        )
 
-        respond(
-            isCorrect = { addedEditor != null },
-            onCorrect = {
-                call.respond(
-                    status = HttpStatusCode.Created,
-                    message = addedEditor!!
-                )
-            },
-            onIncorrect = {
-                call.respond(
-                    status = HttpStatusCode.BadRequest,
-                    message = Response(HttpStatusCode.BadRequest.value)
-                )
-            }
+        call.respond(
+            status = HttpStatusCode.Created,
+            message = addedEditor
         )
     }
 }

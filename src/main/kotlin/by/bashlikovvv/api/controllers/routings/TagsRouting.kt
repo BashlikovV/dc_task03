@@ -39,23 +39,16 @@ private fun Route.getTags(tagsService: TagService) {
 
 private fun Route.createTag(tagsService: TagService) {
     post("/tags") {
-        val createTagDto: CreateTagDto = call.receive()
-        val addedTag = getWithCheck { tagsService.create(createTagDto) }
+        val createTagDto: CreateTagDto = getWithCheck { call.receive() } ?: return@post call.respond(
+            HttpStatusCode.BadRequest, Response(HttpStatusCode.BadRequest.value)
+        )
+        val addedTag = getWithCheck { tagsService.create(createTagDto) } ?: return@post call.respond(
+            status = HttpStatusCode.Forbidden, Response(HttpStatusCode.Forbidden.value)
+        )
 
-        respond(
-            isCorrect = { addedTag != null },
-            onCorrect = {
-                call.respond(
-                    status = HttpStatusCode.Created,
-                    message = addedTag!!
-                )
-            },
-            onIncorrect = {
-                call.respond(
-                    status = HttpStatusCode.BadRequest,
-                    message = Response(HttpStatusCode.BadRequest.value)
-                )
-            }
+        call.respond(
+            status = HttpStatusCode.Created,
+            message = addedTag
         )
     }
 }

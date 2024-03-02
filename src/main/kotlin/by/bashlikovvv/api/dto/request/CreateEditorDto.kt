@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 import kotlin.jvm.Throws
 
 @Serializable
-class CreateEditorDto @Throws(IllegalStateException::class) constructor(
+data class CreateEditorDto @Throws(IllegalArgumentException::class) constructor(
     val login: String,
     val password: String,
     val firstname: String,
@@ -13,18 +13,10 @@ class CreateEditorDto @Throws(IllegalStateException::class) constructor(
 ) {
 
     init {
-        if (!login.inRange(2, 64)) {
-            throw IllegalStateException()
-        }
-        if (!password.inRange(8, 128)) {
-            throw IllegalStateException()
-        }
-        if (!firstname.inRange(2, 64)) {
-            throw IllegalStateException()
-        }
-        if (!lastname.inRange(2, 64)) {
-            throw IllegalStateException()
-        }
+        require(login.inRange(2, 64))
+        require(password.inRange(8, 128))
+        require(firstname.inRange(2, 64))
+        require(lastname.inRange(2, 64))
     }
 
 }

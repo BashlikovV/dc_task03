@@ -17,7 +17,7 @@ class TweetOfflineSource(private val connection: Connection) {
             "(" +
                     "${TweetsTable.COLUMN_ID} SERIAL PRIMARY KEY, " +
                     "${TweetsTable.COLUMN_EDITOR_ID} BIGINT, " +
-                    "${TweetsTable.COLUMN_TITLE} VARCHAR(64), " +
+                    "${TweetsTable.COLUMN_TITLE} VARCHAR(64) UNIQUE, " +
                     "${TweetsTable.COLUMN_CONTENT} VARCHAR(2048), " +
                     "${TweetsTable.COLUMN_CREATED} TIMESTAMP, " +
                     "${TweetsTable.COLUMN_MODIFIED} TIMESTAMP, " +

@@ -4,7 +4,7 @@ import by.bashlikovvv.util.inRange
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class UpdateTweetDto @Throws(IllegalStateException::class) constructor(
+data class UpdateTweetDto @Throws(IllegalArgumentException::class) constructor(
     val id: Long? = null,
     val editorId: Long,
     val title: String,
@@ -13,8 +13,8 @@ data class UpdateTweetDto @Throws(IllegalStateException::class) constructor(
 ) {
 
     init {
-        assert(title.inRange(2, 64))
-        assert(content.inRange(4, 2048))
+        require(title.inRange(2, 64))
+        require(content.inRange(4, 2048))
     }
 
 }
