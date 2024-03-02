@@ -1,4 +1,4 @@
-package by.bashlikovvv.api.controllers.routings
+package by.bashlikovvv.api.controller.routing
 
 import by.bashlikovvv.api.dto.request.CreateTweetDto
 import by.bashlikovvv.api.dto.request.UpdateTweetDto

@@ -1,11 +1,12 @@
 package by.bashlikovvv
 
-import by.bashlikovvv.api.controllers.configureRouting
-import by.bashlikovvv.api.controllers.configureSerialization
+import by.bashlikovvv.api.controller.configureRouting
+import by.bashlikovvv.api.controller.configureSerialization
 import by.bashlikovvv.di.appModule
 import by.bashlikovvv.di.dataModule
 import by.bashlikovvv.util.connectToPostgres
-import io.ktor.server.application.*
+import io.ktor.server.application.Application
+import io.ktor.server.application.install
 import org.koin.ktor.plugin.Koin
 import java.sql.Connection
 

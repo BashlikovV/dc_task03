@@ -1,9 +1,9 @@
-package by.bashlikovvv.api.controllers.routings
+package by.bashlikovvv.api.controller.routing
 
-import by.bashlikovvv.api.dto.request.CreatePostDto
-import by.bashlikovvv.api.dto.request.UpdatePostDto
+import by.bashlikovvv.api.dto.request.CreateTagDto
+import by.bashlikovvv.api.dto.request.UpdateTagDto
 import by.bashlikovvv.domain.model.Response
-import by.bashlikovvv.services.PostService
+import by.bashlikovvv.services.TagService
 import by.bashlikovvv.util.getWithCheck
 import by.bashlikovvv.util.respond
 import io.ktor.http.*
@@ -13,23 +13,23 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 
-fun Route.postsRouting() {
-    val postsService: PostService by inject()
-
-    getPosts(postsService)
-    createPost(postsService)
-    deletePostById(postsService)
-    getPostById(postsService)
-    updatePost(postsService)
+fun Route.tagsRouting() {
+    val tagsService: TagService by inject()
+    
+    getTags(tagsService)
+    createTag(tagsService)
+    deleteTagById(tagsService)
+    getTagById(tagsService)
+    updateTag(tagsService)
 }
 
-private fun Route.getPosts(postsService: PostService) {
-    get("/posts") {
-        val posts = postsService.getAll()
+private fun Route.getTags(tagsService: TagService) {
+    get("/tags") {
+        val tags = tagsService.getAll()
 
         respond(
-            isCorrect = { posts.isNotEmpty() },
-            onCorrect = { call.respond(status = HttpStatusCode.OK, posts) },
+            isCorrect = { tags.isNotEmpty() },
+            onCorrect = { call.respond(status = HttpStatusCode.OK, tags) },
             onIncorrect = {
                 call.respond(status = HttpStatusCode.OK, Response(HttpStatusCode.OK.value))
             }
@@ -37,29 +37,29 @@ private fun Route.getPosts(postsService: PostService) {
     }
 }
 
-private fun Route.createPost(postsService: PostService) {
-    post("/posts") {
-        val post: CreatePostDto = getWithCheck { call.receive() } ?: return@post call.respond(
-            status = HttpStatusCode.BadRequest, Response(HttpStatusCode.BadRequest.value)
+private fun Route.createTag(tagsService: TagService) {
+    post("/tags") {
+        val createTagDto: CreateTagDto = getWithCheck { call.receive() } ?: return@post call.respond(
+            HttpStatusCode.BadRequest, Response(HttpStatusCode.BadRequest.value)
         )
-        val addedPost = getWithCheck { postsService.create(post) } ?: return@post call.respond(
+        val addedTag = getWithCheck { tagsService.create(createTagDto) } ?: return@post call.respond(
             status = HttpStatusCode.Forbidden, Response(HttpStatusCode.Forbidden.value)
         )
 
         call.respond(
             status = HttpStatusCode.Created,
-            message = addedPost
+            message = addedTag
         )
     }
 }
 
-private fun Route.deletePostById(postsService: PostService) {
-    delete("/posts/{id?}") {
+private fun Route.deleteTagById(tagsService: TagService) {
+    delete("/tags/{id?}") {
         val id = call.parameters["id"] ?: return@delete call.respond(
             status = HttpStatusCode.BadRequest,
             message = Response(HttpStatusCode.BadRequest.value)
         )
-        val removedItem = postsService.delete(id.toLong())
+        val removedItem = tagsService.delete(id.toLong())
 
         respond(
             isCorrect = { removedItem },
@@ -76,13 +76,13 @@ private fun Route.deletePostById(postsService: PostService) {
     }
 }
 
-private fun Route.getPostById(postsService: PostService) {
-    get("/posts/{id?}") {
+private fun Route.getTagById(tagsService: TagService) {
+    get("/tags/{id?}") {
         val id = call.parameters["id"] ?: return@get call.respond(
             status = HttpStatusCode.BadRequest,
             message = Response(HttpStatusCode.BadRequest.value)
         )
-        val requestedItem = postsService.getById(id.toLong())
+        val requestedItem = tagsService.getById(id.toLong())
 
         respond(
             isCorrect = { requestedItem != null },
@@ -99,23 +99,23 @@ private fun Route.getPostById(postsService: PostService) {
     }
 }
 
-private fun Route.updatePost(postsService: PostService) {
-    put("/posts") {
-        val updatePostDto: UpdatePostDto = getWithCheck { call.receive() } ?: return@put call.respond(
+private fun Route.updateTag(tagsService: TagService) {
+    put("/tags") {
+        val updateTagDto: UpdateTagDto = getWithCheck { call.receive() } ?: return@put call.respond(
             status = HttpStatusCode.BadRequest,
             message = Response(HttpStatusCode.BadRequest.value)
         )
-        val updatedPost = postsService.update(
-            postId = updatePostDto.id,
-            updatePostDto = updatePostDto
+        val updatedTag = tagsService.update(
+            tagId = updateTagDto.id,
+            updateTagDto = updateTagDto
         )
 
         respond(
-            isCorrect = { updatedPost != null },
+            isCorrect = { updatedTag != null },
             onCorrect = {
                 call.respond(
                     status = HttpStatusCode.OK,
-                    message = updatedPost!!
+                    message = updatedTag!!
                 )
             },
             onIncorrect = {

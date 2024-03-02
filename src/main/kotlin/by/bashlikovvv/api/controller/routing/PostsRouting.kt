@@ -1,9 +1,9 @@
-package by.bashlikovvv.api.controllers.routings
+package by.bashlikovvv.api.controller.routing
 
-import by.bashlikovvv.api.dto.request.CreateEditorDto
-import by.bashlikovvv.api.dto.request.UpdateEditorDto
+import by.bashlikovvv.api.dto.request.CreatePostDto
+import by.bashlikovvv.api.dto.request.UpdatePostDto
 import by.bashlikovvv.domain.model.Response
-import by.bashlikovvv.services.EditorService
+import by.bashlikovvv.services.PostService
 import by.bashlikovvv.util.getWithCheck
 import by.bashlikovvv.util.respond
 import io.ktor.http.*
@@ -13,23 +13,23 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 
-fun Route.editorsRouting() {
-    val editorsService: EditorService by inject()
+fun Route.postsRouting() {
+    val postsService: PostService by inject()
 
-    getEditors(editorsService)
-    createEditor(editorsService)
-    deleteEditorById(editorsService)
-    getEditorById(editorsService)
-    updateEditor(editorsService)
+    getPosts(postsService)
+    createPost(postsService)
+    deletePostById(postsService)
+    getPostById(postsService)
+    updatePost(postsService)
 }
 
-private fun Route.getEditors(editorsService: EditorService) {
-    get("/editors") {
-        val editors = editorsService.getAll()
+private fun Route.getPosts(postsService: PostService) {
+    get("/posts") {
+        val posts = postsService.getAll()
 
         respond(
-            isCorrect = { editors.isNotEmpty() },
-            onCorrect = { call.respond(status = HttpStatusCode.OK, editors) },
+            isCorrect = { posts.isNotEmpty() },
+            onCorrect = { call.respond(status = HttpStatusCode.OK, posts) },
             onIncorrect = {
                 call.respond(status = HttpStatusCode.OK, Response(HttpStatusCode.OK.value))
             }
@@ -37,30 +37,29 @@ private fun Route.getEditors(editorsService: EditorService) {
     }
 }
 
-private fun Route.createEditor(editorsService: EditorService) {
-    post("/editors") {
-        val createEditorDto: CreateEditorDto? = getWithCheck { call.receive() }
-        createEditorDto ?: return@post call.respond(
+private fun Route.createPost(postsService: PostService) {
+    post("/posts") {
+        val post: CreatePostDto = getWithCheck { call.receive() } ?: return@post call.respond(
             status = HttpStatusCode.BadRequest, Response(HttpStatusCode.BadRequest.value)
         )
-        val addedEditor = getWithCheck { editorsService.create(createEditorDto) } ?: return@post call.respond(
+        val addedPost = getWithCheck { postsService.create(post) } ?: return@post call.respond(
             status = HttpStatusCode.Forbidden, Response(HttpStatusCode.Forbidden.value)
         )
 
         call.respond(
             status = HttpStatusCode.Created,
-            message = addedEditor
+            message = addedPost
         )
     }
 }
 
-private fun Route.deleteEditorById(editorsService: EditorService) {
-    delete("/editors/{id?}") {
+private fun Route.deletePostById(postsService: PostService) {
+    delete("/posts/{id?}") {
         val id = call.parameters["id"] ?: return@delete call.respond(
             status = HttpStatusCode.BadRequest,
             message = Response(HttpStatusCode.BadRequest.value)
         )
-        val removedItem = editorsService.delete(id.toLong())
+        val removedItem = postsService.delete(id.toLong())
 
         respond(
             isCorrect = { removedItem },
@@ -77,13 +76,13 @@ private fun Route.deleteEditorById(editorsService: EditorService) {
     }
 }
 
-private fun Route.getEditorById(editorsService: EditorService) {
-    get("/editors/{id?}") {
+private fun Route.getPostById(postsService: PostService) {
+    get("/posts/{id?}") {
         val id = call.parameters["id"] ?: return@get call.respond(
             status = HttpStatusCode.BadRequest,
             message = Response(HttpStatusCode.BadRequest.value)
         )
-        val requestedItem = editorsService.getById(id.toLong())
+        val requestedItem = postsService.getById(id.toLong())
 
         respond(
             isCorrect = { requestedItem != null },
@@ -100,24 +99,23 @@ private fun Route.getEditorById(editorsService: EditorService) {
     }
 }
 
-private fun Route.updateEditor(editorsService: EditorService) {
-    put("/editors") {
-        val updateEditorDto: UpdateEditorDto = getWithCheck { call.receive() } ?: return@put call.respond(
+private fun Route.updatePost(postsService: PostService) {
+    put("/posts") {
+        val updatePostDto: UpdatePostDto = getWithCheck { call.receive() } ?: return@put call.respond(
             status = HttpStatusCode.BadRequest,
             message = Response(HttpStatusCode.BadRequest.value)
         )
-
-        val updatedEditor = editorsService.update(
-            editorId = updateEditorDto.id,
-            updateEditorDto = updateEditorDto
+        val updatedPost = postsService.update(
+            postId = updatePostDto.id,
+            updatePostDto = updatePostDto
         )
 
         respond(
-            isCorrect = { updatedEditor != null },
+            isCorrect = { updatedPost != null },
             onCorrect = {
                 call.respond(
                     status = HttpStatusCode.OK,
-                    message = updatedEditor!!
+                    message = updatedPost!!
                 )
             },
             onIncorrect = {

@@ -19,7 +19,7 @@ import java.sql.DriverManager
  * user and password values.
  *
  *
- * @param embedded -- if [true] defaults to an embedded database for tests that runs locally in the same process.
+ * @param embedded -- if true defaults to an embedded database for tests that runs locally in the same process.
  * In this case you don't have to provide any parameters in configuration file, and you don't have to run a process.
  *
  * @return [Connection] that represent connection to the database. Please, don't forget to close this connection when
