@@ -3,7 +3,7 @@ package by.bashlikovvv.domain.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-class Editor(
+data class Editor(
     val id: Long,
     val login: String,
     val password: String,

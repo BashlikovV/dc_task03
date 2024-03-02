@@ -3,19 +3,18 @@ package by.bashlikovvv.services
 import by.bashlikovvv.api.dto.request.CreateEditorDto
 import by.bashlikovvv.api.dto.request.UpdateEditorDto
 import by.bashlikovvv.api.dto.response.EditorDto
+import by.bashlikovvv.domain.model.Editor
 
 interface EditorService {
 
-    fun create(createEditorDto: CreateEditorDto): EditorDto?
+    suspend fun create(createEditorDto: CreateEditorDto): Editor?
 
-    fun update(editorId: Long, updateEditorDto: UpdateEditorDto): EditorDto?
+    suspend fun update(editorId: Long, updateEditorDto: UpdateEditorDto): Editor?
 
-    fun getById(editorId: Long): EditorDto?
+    suspend fun getById(editorId: Long): Editor?
 
-    fun getAll(): List<EditorDto?>
+    suspend fun getAll(): List<Editor?>
 
-    fun delete(editorId: Long): Boolean
-
-    fun getByLogin(login: String): EditorDto?
+    suspend fun delete(editorId: Long): Boolean
 
 }

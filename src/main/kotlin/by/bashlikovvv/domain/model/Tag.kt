@@ -1,6 +1,9 @@
 package by.bashlikovvv.domain.model
 
-class Tag(
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class Tag(
     val id: Long,
     val name: String
 )

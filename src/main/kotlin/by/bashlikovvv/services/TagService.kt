@@ -2,18 +2,18 @@ package by.bashlikovvv.services
 
 import by.bashlikovvv.api.dto.request.CreateTagDto
 import by.bashlikovvv.api.dto.request.UpdateTagDto
-import by.bashlikovvv.api.dto.response.TagDto
+import by.bashlikovvv.domain.model.Tag
 
 interface TagService {
 
-    fun create(createTagDto: CreateTagDto): TagDto?
+    suspend fun create(createTagDto: CreateTagDto): Tag?
 
-    fun getAll(): List<TagDto?>
+    suspend fun getAll(): List<Tag?>
 
-    fun getById(tagId: Long): TagDto?
+    suspend fun getById(tagId: Long): Tag?
 
-    fun update(tagId: Long, updateTagDto: UpdateTagDto): TagDto?
+    suspend fun update(tagId: Long, updateTagDto: UpdateTagDto): Tag?
 
-    fun delete(tagId: Long): Boolean
+    suspend fun delete(tagId: Long): Boolean
 
 }

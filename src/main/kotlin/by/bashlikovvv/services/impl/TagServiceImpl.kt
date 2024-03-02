@@ -1,51 +1,42 @@
 package by.bashlikovvv.services.impl
 
-import by.bashlikovvv.api.dto.mappers.CreateTagDtoToTagDtoMapper
-import by.bashlikovvv.api.dto.mappers.UpdateTagDtoToTagDtoMapper
 import by.bashlikovvv.api.dto.request.CreateTagDto
 import by.bashlikovvv.api.dto.request.UpdateTagDto
-import by.bashlikovvv.api.dto.response.TagDto
+import by.bashlikovvv.data.mapper.CreateTagDtoToTagMapper
+import by.bashlikovvv.data.mapper.UpdateTagDtoToTagMapper
+import by.bashlikovvv.domain.model.Tag
 import by.bashlikovvv.domain.repository.ITagsRepository
 import by.bashlikovvv.services.TagService
 
 class TagServiceImpl(
     private val tagsRepository: ITagsRepository
 ) : TagService {
-    override fun create(createTagDto: CreateTagDto): TagDto? {
-        val lastItemId = if (tagsRepository.data.isEmpty()) {
-            -1
-        } else {
-            tagsRepository.getLastItem()?.id ?: return null
+    override suspend fun create(createTagDto: CreateTagDto): Tag {
+        val tag = CreateTagDtoToTagMapper().mapFromEntity(createTagDto)
+        val id = tagsRepository.create(tag)
+
+        return tag.copy(id = id)
+    }
+
+    override suspend fun getAll(): List<Tag?> {
+        return tagsRepository.readAll()
+    }
+
+    override suspend fun getById(tagId: Long): Tag? {
+        return tagsRepository.read(tagId)
+    }
+
+    override suspend fun update(tagId: Long, updateTagDto: UpdateTagDto): Tag {
+        val tag = UpdateTagDtoToTagMapper().mapFromEntity(updateTagDto)
+        if (!tagsRepository.update(tagId, tag)) {
+
         }
-        val savedEntity = tagsRepository.addItem(
-            id = lastItemId + 1,
-            item = CreateTagDtoToTagDtoMapper(
-                id = lastItemId + 1,
-                name = createTagDto.name
-            ).mapFromEntity(createTagDto)
-        )
 
-        return savedEntity
+        return tag
     }
 
-    override fun getAll(): List<TagDto?> {
-        return tagsRepository.data.map { it.second }
+    override suspend fun delete(tagId: Long): Boolean {
+        return tagsRepository.delete(tagId)
     }
 
-    override fun getById(tagId: Long): TagDto? {
-        return tagsRepository.getItemById(tagId)?.second
-    }
-
-    override fun update(tagId: Long, updateTagDto: UpdateTagDto): TagDto? {
-        val savedEntity = tagsRepository.addItem(
-            id = tagId,
-            item = UpdateTagDtoToTagDtoMapper(updateTagDto.name).mapFromEntity(updateTagDto)
-        )
-
-        return savedEntity
-    }
-
-    override fun delete(tagId: Long): Boolean {
-        return tagsRepository.removeItem(tagId)
-    }
 }

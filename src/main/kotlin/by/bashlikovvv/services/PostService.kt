@@ -3,17 +3,18 @@ package by.bashlikovvv.services
 import by.bashlikovvv.api.dto.request.CreatePostDto
 import by.bashlikovvv.api.dto.request.UpdatePostDto
 import by.bashlikovvv.api.dto.response.PostDto
+import by.bashlikovvv.domain.model.Post
 
 interface PostService {
 
-    fun create(createPostDto: CreatePostDto): PostDto?
+    suspend fun create(createPostDto: CreatePostDto): Post?
 
-    fun update(postId: Long, updatePostDto: UpdatePostDto): PostDto?
+    suspend fun update(postId: Long, updatePostDto: UpdatePostDto): Post?
 
-    fun getById(postId: Long): PostDto?
+    suspend fun getById(postId: Long): Post?
 
-    fun getAll(): List<PostDto?>
+    suspend fun getAll(): List<Post?>
 
-    fun delete(postId: Long): Boolean
+    suspend fun delete(postId: Long): Boolean
 
 }

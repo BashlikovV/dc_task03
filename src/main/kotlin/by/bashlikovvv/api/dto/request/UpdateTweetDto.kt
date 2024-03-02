@@ -8,7 +8,7 @@ data class UpdateTweetDto @Throws(IllegalStateException::class) constructor(
     val id: Long? = null,
     val editorId: Long,
     val title: String,
-    val content: String? = null,
+    val content: String,
     val name: String? = null
 ) {
 

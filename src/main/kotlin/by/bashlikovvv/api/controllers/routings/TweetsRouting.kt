@@ -112,8 +112,12 @@ private fun Route.updateTweet(tweetsService: TweetService) {
             status = HttpStatusCode.BadRequest,
             message = Response(HttpStatusCode.BadRequest.value)
         )
+        val tweetId = tweetsService.getByEditorId(updateTweetDto.editorId)?.id ?: return@put call.respond(
+            status = HttpStatusCode.BadRequest,
+            message = Response(HttpStatusCode.BadRequest.value)
+        )
         val updatedTweet = tweetsService.update(
-            tweetId = updateTweetDto.editorId,
+            tweetId = tweetId,
             updateTweetDto = UpdateTweetDto(
                 editorId = updateTweetDto.editorId,
                 title = updateTweetDto.title,

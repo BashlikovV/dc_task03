@@ -1,59 +1,45 @@
 package by.bashlikovvv.services.impl
 
-import by.bashlikovvv.api.dto.mappers.CreateTweetDtoToTweetDtoMapper
-import by.bashlikovvv.api.dto.mappers.UpdateTweetDtoToTweetDtoMapper
 import by.bashlikovvv.api.dto.request.CreateTweetDto
 import by.bashlikovvv.api.dto.request.UpdateTweetDto
-import by.bashlikovvv.api.dto.response.TweetDto
+import by.bashlikovvv.data.mapper.CreateTweetDtoToTweetMapper
+import by.bashlikovvv.data.mapper.UpdateTweetDtoToTweetMapper
+import by.bashlikovvv.domain.model.Tweet
 import by.bashlikovvv.domain.repository.ITweetsRepository
 import by.bashlikovvv.services.TweetService
-import java.sql.Timestamp
 
 class TweetServiceImpl(
     private val tweetRepository: ITweetsRepository
 ) : TweetService {
-    override fun create(createTweetDto: CreateTweetDto): TweetDto? {
-        val lastItemId = if (tweetRepository.data.isEmpty()) {
-            -1
-        } else {
-            tweetRepository.getLastItem()?.id ?: return null
-        }
+    override suspend  fun create(createTweetDto: CreateTweetDto): Tweet {
+        val tweet = CreateTweetDtoToTweetMapper().mapFromEntity(createTweetDto)
+        val id = tweetRepository.create(tweet)
 
-        val timeStamp = Timestamp(System.currentTimeMillis())
-        val savedEntity = tweetRepository.addItem(
-            id = lastItemId + 1,
-            item = CreateTweetDtoToTweetDtoMapper(lastItemId + 1, timeStamp).mapFromEntity(createTweetDto)
-        )
-
-        return savedEntity
+        return tweet.copy(id = id)
     }
 
-    override fun getAll(): List<TweetDto?> {
-        return tweetRepository.data.map { it.second }
+    override suspend  fun getAll(): List<Tweet?> {
+        return tweetRepository.readAll()
     }
 
-    override fun getById(tweetId: Long): TweetDto? {
-        return tweetRepository.getItemById(tweetId)?.second
+    override suspend  fun getById(tweetId: Long): Tweet? {
+        return tweetRepository.read(tweetId)
     }
 
-    override fun getByEditorId(editorId: Long): TweetDto? {
-        return tweetRepository.data.find { it.second.editorId == editorId }?.second
+    override suspend  fun getByEditorId(editorId: Long): Tweet? {
+        return tweetRepository.readBYEditorId(editorId).first()
     }
 
-    override fun update(tweetId: Long, updateTweetDto: UpdateTweetDto): TweetDto? {
-        val tweetDto = tweetRepository.getItemById(tweetId)?.second
-        tweetDto ?: return null
+    override suspend  fun update(tweetId: Long, updateTweetDto: UpdateTweetDto): Tweet? {
+        var tweet = tweetRepository.read(tweetId) ?: return null
+        tweet = UpdateTweetDtoToTweetMapper(tweet).mapFromEntity(updateTweetDto)
+        tweetRepository.update(tweetId, tweet)
 
-        val modified = Timestamp(System.currentTimeMillis())
-        val savedEntity = tweetRepository.addItem(
-            id = tweetId,
-            item = UpdateTweetDtoToTweetDtoMapper(tweetDto, modified).mapFromEntity(updateTweetDto)
-        )
-
-        return savedEntity
+        return tweet
     }
 
-    override fun delete(tweetId: Long): Boolean {
-        return tweetRepository.removeItem(tweetId)
+    override suspend  fun delete(tweetId: Long): Boolean {
+        return tweetRepository.delete(tweetId) > 0
     }
+
 }

@@ -3,19 +3,20 @@ package by.bashlikovvv.services
 import by.bashlikovvv.api.dto.request.CreateTweetDto
 import by.bashlikovvv.api.dto.request.UpdateTweetDto
 import by.bashlikovvv.api.dto.response.TweetDto
+import by.bashlikovvv.domain.model.Tweet
 
 interface TweetService {
 
-    fun create(createTweetDto: CreateTweetDto): TweetDto?
+    suspend fun create(createTweetDto: CreateTweetDto): Tweet?
 
-    fun getAll(): List<TweetDto?>
+    suspend fun getAll(): List<Tweet?>
 
-    fun getById(tweetId: Long): TweetDto?
+    suspend fun getById(tweetId: Long): Tweet?
 
-    fun getByEditorId(editorId: Long): TweetDto?
+    suspend fun getByEditorId(editorId: Long): Tweet?
 
-    fun update(tweetId: Long, updateTweetDto: UpdateTweetDto): TweetDto?
+    suspend fun update(tweetId: Long, updateTweetDto: UpdateTweetDto): Tweet?
 
-    fun delete(tweetId: Long): Boolean
+    suspend fun delete(tweetId: Long): Boolean
 
 }

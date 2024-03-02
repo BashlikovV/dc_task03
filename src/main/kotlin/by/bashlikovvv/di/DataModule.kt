@@ -1,15 +1,20 @@
 package by.bashlikovvv.di
 
-import by.bashlikovvv.api.dto.response.EditorDto
-import by.bashlikovvv.api.dto.response.PostDto
-import by.bashlikovvv.api.dto.response.TagDto
-import by.bashlikovvv.api.dto.response.TweetDto
+import by.bashlikovvv.data.local.dao.EditorOfflineSource
+import by.bashlikovvv.data.local.dao.PostOfflineSource
+import by.bashlikovvv.data.local.dao.TagOfflineSource
+import by.bashlikovvv.data.local.dao.TweetOfflineSource
+import by.bashlikovvv.data.repository.EditorsRepository
+import by.bashlikovvv.data.repository.PostsRepository
+import by.bashlikovvv.data.repository.TagsRepository
+import by.bashlikovvv.data.repository.TweetsRepository
 import by.bashlikovvv.domain.repository.IEditorsRepository
 import by.bashlikovvv.domain.repository.IPostsRepository
 import by.bashlikovvv.domain.repository.ITagsRepository
 import by.bashlikovvv.domain.repository.ITweetsRepository
 import org.koin.core.qualifier.StringQualifier
 import org.koin.dsl.module
+import java.sql.Connection
 
 val editorsRepositoryQualifier = StringQualifier("editors_repository")
 val tweetsRepositoryQualifier = StringQualifier("tweets_repository")
@@ -18,112 +23,52 @@ val tagsRepositoryQualifier = StringQualifier("tags_repository")
 
 val dataModule = module {
 
+    single<EditorOfflineSource> {
+        val dbConnection: Connection = get()
+
+        EditorOfflineSource(dbConnection)
+    }
+
+    single<TweetOfflineSource> {
+        val dbConnection: Connection = get()
+
+        TweetOfflineSource(dbConnection)
+    }
+
+    single<PostOfflineSource> {
+        val dbConnection: Connection = get()
+
+        PostOfflineSource(dbConnection)
+    }
+
+    single<TagOfflineSource> {
+        val dbConnection: Connection = get()
+
+        TagOfflineSource(dbConnection)
+    }
+
     single<IEditorsRepository>(editorsRepositoryQualifier) {
-        object : IEditorsRepository {
-            override val data: MutableList<Pair<Long, EditorDto>> = mutableListOf()
+        val editorOfflineSource: EditorOfflineSource = get()
 
-            override fun getLastItem(): EditorDto? {
-                var maxKey = 0L
-                data.forEach { maxKey = maxOf(it.first, maxKey) }
-
-                return data.find { it.first == maxKey }?.second
-            }
-
-            override fun addItem(id: Long, item: EditorDto): EditorDto? {
-                val flag = data.add(id to item)
-
-                return if (flag) {
-                    item
-                } else {
-                    null
-                }
-            }
-
-            override fun removeItem(id: Long): Boolean {
-                return data.removeIf { it.first == id }
-            }
-        }
+        EditorsRepository(editorOfflineSource)
     }
 
     single<ITweetsRepository>(tweetsRepositoryQualifier) {
-        object : ITweetsRepository {
-            override val data: MutableList<Pair<Long, TweetDto>> = mutableListOf()
+        val tweetOfflineSource: TweetOfflineSource = get()
 
-            override fun getLastItem(): TweetDto? {
-                var maxKey = 0L
-                data.forEach { maxKey = maxOf(it.first, maxKey) }
-
-                return data.find { it.first == maxKey }?.second
-            }
-
-            override fun removeItem(id: Long): Boolean {
-                return data.removeIf { it.first == id }
-            }
-
-            override fun addItem(id: Long, item: TweetDto): TweetDto? {
-                val flag = data.add(id to item)
-
-                return if (flag) {
-                    item
-                } else {
-                    null
-                }
-            }
-        }
+        TweetsRepository(tweetOfflineSource)
     }
 
     single<IPostsRepository>(postsRepositoryQualifier) {
-        object : IPostsRepository {
-            override val data: MutableList<Pair<Long, PostDto>> = mutableListOf()
+        val postOfflineSource: PostOfflineSource = get()
 
-            override fun getLastItem(): PostDto? {
-                var maxKey = 0L
-                data.forEach { maxKey = maxOf(it.first, maxKey) }
-
-                return data.find { it.first == maxKey }?.second
-            }
-
-            override fun removeItem(id: Long): Boolean {
-                return data.removeIf { it.first == id }
-            }
-
-            override fun addItem(id: Long, item: PostDto): PostDto? {
-                val flag = data.add(id to item)
-
-                return if (flag) {
-                    item
-                } else {
-                    null
-                }
-            }
-        }
+        PostsRepository(postOfflineSource)
     }
 
     single<ITagsRepository>(tagsRepositoryQualifier) {
-        object : ITagsRepository {
-            override val data: MutableList<Pair<Long, TagDto>> = mutableListOf()
+        val tagOfflineSource: TagOfflineSource = get()
 
-            override fun getLastItem(): TagDto? {
-                var maxKey = 0L
-                data.forEach { maxKey = maxOf(it.first, maxKey) }
-
-                return data.find { it.first == maxKey }?.second
-            }
-
-            override fun removeItem(id: Long): Boolean {
-                return data.removeIf { it.first == id }
-            }
-
-            override fun addItem(id: Long, item: TagDto): TagDto? {
-                val flag = data.add(id to item)
-
-                return if (flag) {
-                    item
-                } else {
-                    null
-                }
-            }
-        }
+        TagsRepository(tagOfflineSource)
     }
 
 }
