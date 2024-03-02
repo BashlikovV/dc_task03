@@ -3,7 +3,6 @@ package by.bashlikovvv.data.repository
 import by.bashlikovvv.data.local.dao.EditorOfflineSource
 import by.bashlikovvv.domain.model.Editor
 import by.bashlikovvv.domain.repository.IEditorsRepository
-import java.sql.Connection
 
 class EditorsRepository(
     private val editorOfflineSource: EditorOfflineSource

@@ -2,7 +2,6 @@ package by.bashlikovvv.services
 
 import by.bashlikovvv.api.dto.request.CreateEditorDto
 import by.bashlikovvv.api.dto.request.UpdateEditorDto
-import by.bashlikovvv.api.dto.response.EditorDto
 import by.bashlikovvv.domain.model.Editor
 
 interface EditorService {

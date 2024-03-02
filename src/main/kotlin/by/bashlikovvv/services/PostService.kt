@@ -2,7 +2,6 @@ package by.bashlikovvv.services
 
 import by.bashlikovvv.api.dto.request.CreatePostDto
 import by.bashlikovvv.api.dto.request.UpdatePostDto
-import by.bashlikovvv.api.dto.response.PostDto
 import by.bashlikovvv.domain.model.Post
 
 interface PostService {

@@ -2,7 +2,6 @@ package by.bashlikovvv.services
 
 import by.bashlikovvv.api.dto.request.CreateTweetDto
 import by.bashlikovvv.api.dto.request.UpdateTweetDto
-import by.bashlikovvv.api.dto.response.TweetDto
 import by.bashlikovvv.domain.model.Tweet
 
 interface TweetService {

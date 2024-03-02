@@ -18,7 +18,7 @@ class PostServiceImpl(
         return post.copy(id = id)
     }
 
-    override suspend fun update(postId: Long, updatePostDto: UpdatePostDto): Post? {
+    override suspend fun update(postId: Long, updatePostDto: UpdatePostDto): Post {
         val post = UpdatePostDtoToPostMapper().mapFromEntity(updatePostDto)
         if (!postRepository.update(postId, post)) {
 

@@ -13,8 +13,8 @@ data class UpdateTweetDto @Throws(IllegalStateException::class) constructor(
 ) {
 
     init {
-        if (!title.inRange(2, 64)) { throw IllegalStateException() }
-        if (content?.inRange(4, 2048) == false) { throw IllegalStateException() }
+        assert(title.inRange(2, 64))
+        assert(content.inRange(4, 2048))
     }
 
 }
