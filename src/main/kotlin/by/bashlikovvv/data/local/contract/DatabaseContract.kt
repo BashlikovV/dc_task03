@@ -28,17 +28,17 @@ object DatabaseContract {
         const val COLUMN_CONTENT = "posts_content"
     }
 
+    object TagsTable {
+        const val TABLE_NAME = "tags"
+        const val COLUMN_ID = "tags_ID"
+        const val COLUMN_NAME = "tags_NAME"
+    }
+
     object TweetTagsTable {
         const val TABLE_NAME = "tweet_tags"
         const val COLUMN_ID = "tweet_tags_id"
         const val COLUMN_TWEET_ID = "tweet_tags_tweet_id"
         const val COLUMN_TAG_ID = "tweet_tags_tag_id"
-    }
-
-    object TagsTable {
-        const val TABLE_NAME = "tags"
-        const val COLUMN_ID = "tags_ID"
-        const val COLUMN_NAME = "tags_NAME"
     }
 
 }
