@@ -31,7 +31,10 @@ private fun Route.getEditors(editorsService: EditorService) {
             isCorrect = { editors.isNotEmpty() },
             onCorrect = { call.respond(status = HttpStatusCode.OK, editors) },
             onIncorrect = {
-                call.respond(status = HttpStatusCode.OK, Response(HttpStatusCode.OK.value))
+                call.respond(
+                    status = HttpStatusCode.OK,
+                    Response(HttpStatusCode.OK.value, "")
+                )
             }
         )
     }
@@ -41,10 +44,11 @@ private fun Route.createEditor(editorsService: EditorService) {
     post("/editors") {
         val createEditorDto: CreateEditorDto? = getWithCheck { call.receive() }
         createEditorDto ?: return@post call.respond(
-            status = HttpStatusCode.BadRequest, Response(HttpStatusCode.BadRequest.value)
+            status = HttpStatusCode.BadRequest, Response(HttpStatusCode.BadRequest.value, "")
         )
         val addedEditor = getWithCheck { editorsService.create(createEditorDto) } ?: return@post call.respond(
-            status = HttpStatusCode.Forbidden, Response(HttpStatusCode.Forbidden.value)
+            status = HttpStatusCode.Forbidden,
+            Response(HttpStatusCode.Forbidden.value, "")
         )
 
         call.respond(
@@ -58,19 +62,22 @@ private fun Route.deleteEditorById(editorsService: EditorService) {
     delete("/editors/{id?}") {
         val id = call.parameters["id"] ?: return@delete call.respond(
             status = HttpStatusCode.BadRequest,
-            message = Response(HttpStatusCode.BadRequest.value)
+            message = Response(HttpStatusCode.BadRequest.value, "")
         )
         val removedItem = editorsService.delete(id.toLong())
 
         respond(
             isCorrect = { removedItem },
             onCorrect = {
-                call.respond(status = HttpStatusCode.NoContent, Response(HttpStatusCode.OK.value))
+                call.respond(
+                    status = HttpStatusCode.NoContent,
+                    Response(HttpStatusCode.OK.value, "")
+                )
             },
             onIncorrect = {
                 call.respond(
                     status = HttpStatusCode.BadRequest,
-                    message = Response(HttpStatusCode.BadRequest.value)
+                    message = Response(HttpStatusCode.BadRequest.value, "")
                 )
             }
         )
@@ -81,7 +88,7 @@ private fun Route.getEditorById(editorsService: EditorService) {
     get("/editors/{id?}") {
         val id = call.parameters["id"] ?: return@get call.respond(
             status = HttpStatusCode.BadRequest,
-            message = Response(HttpStatusCode.BadRequest.value)
+            message = Response(HttpStatusCode.BadRequest.value, "")
         )
         val requestedItem = editorsService.getById(id.toLong())
 
@@ -93,7 +100,7 @@ private fun Route.getEditorById(editorsService: EditorService) {
             onIncorrect = {
                 call.respond(
                     status = HttpStatusCode.BadRequest,
-                    message = Response(HttpStatusCode.BadRequest.value)
+                    message = Response(HttpStatusCode.BadRequest.value, "")
                 )
             }
         )
@@ -104,7 +111,7 @@ private fun Route.updateEditor(editorsService: EditorService) {
     put("/editors") {
         val updateEditorDto: UpdateEditorDto = getWithCheck { call.receive() } ?: return@put call.respond(
             status = HttpStatusCode.BadRequest,
-            message = Response(HttpStatusCode.BadRequest.value)
+            message = Response(HttpStatusCode.BadRequest.value, "")
         )
 
         val updatedEditor = editorsService.update(
@@ -123,7 +130,7 @@ private fun Route.updateEditor(editorsService: EditorService) {
             onIncorrect = {
                 call.respond(
                     status = HttpStatusCode.BadRequest,
-                    message = Response(HttpStatusCode.BadRequest.value)
+                    message = Response(HttpStatusCode.BadRequest.value, "")
                 )
             }
         )

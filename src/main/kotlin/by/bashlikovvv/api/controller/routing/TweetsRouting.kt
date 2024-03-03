@@ -31,7 +31,10 @@ private fun Route.getTweets(tweetService: TweetService) {
             isCorrect = { tweets.isNotEmpty() },
             onCorrect = { call.respond(status = HttpStatusCode.OK, tweets) },
             onIncorrect = {
-                call.respond(status = HttpStatusCode.OK, Response(HttpStatusCode.OK.value))
+                call.respond(
+                    status = HttpStatusCode.OK,
+                    message = Response(HttpStatusCode.OK.value, "")
+                )
             }
         )
     }
@@ -40,10 +43,12 @@ private fun Route.getTweets(tweetService: TweetService) {
 private fun Route.createTweet(tweetsService: TweetService) {
     post("/tweets") {
         val tweet: CreateTweetDto = getWithCheck { call.receive() } ?: return@post call.respond(
-            status = HttpStatusCode.BadRequest, Response(HttpStatusCode.BadRequest.value)
+            status = HttpStatusCode.BadRequest,
+            message = Response(HttpStatusCode.BadRequest.value, "")
         )
         val addedTweet = getWithCheck { tweetsService.create(tweet) } ?: return@post call.respond(
-            status = HttpStatusCode.Forbidden, Response(HttpStatusCode.Forbidden.value)
+            status = HttpStatusCode.Forbidden,
+            message = Response(HttpStatusCode.Forbidden.value, "")
         )
 
         call.respond(
@@ -57,19 +62,22 @@ private fun Route.deleteTweetById(tweetsService: TweetService) {
     delete("/tweets/{id?}") {
         val id = call.parameters["id"] ?: return@delete call.respond(
             status = HttpStatusCode.BadRequest,
-            message = Response(HttpStatusCode.BadRequest.value)
+            message = Response(HttpStatusCode.BadRequest.value, "")
         )
         val removedItem = tweetsService.delete(id.toLong())
 
         respond(
             isCorrect = { removedItem },
             onCorrect = {
-                call.respond(status = HttpStatusCode.NoContent, Response(HttpStatusCode.OK.value))
+                call.respond(
+                    status = HttpStatusCode.NoContent,
+                    message = Response(HttpStatusCode.OK.value, "")
+                )
             },
             onIncorrect = {
                 call.respond(
                     status = HttpStatusCode.BadRequest,
-                    message = Response(HttpStatusCode.BadRequest.value)
+                    message = Response(HttpStatusCode.BadRequest.value, "")
                 )
             }
         )
@@ -80,7 +88,7 @@ private fun Route.getTweetById(tweetsService: TweetService) {
     get("/tweets/{id?}") {
         val id = call.parameters["id"] ?: return@get call.respond(
             status = HttpStatusCode.BadRequest,
-            message = Response(HttpStatusCode.BadRequest.value)
+            message = Response(HttpStatusCode.BadRequest.value, "")
         )
         val requestedItem = tweetsService.getById(id.toLong())
 
@@ -92,7 +100,7 @@ private fun Route.getTweetById(tweetsService: TweetService) {
             onIncorrect = {
                 call.respond(
                     status = HttpStatusCode.BadRequest,
-                    message = Response(HttpStatusCode.BadRequest.value)
+                    message = Response(HttpStatusCode.BadRequest.value, "")
                 )
             }
         )
@@ -103,11 +111,11 @@ private fun Route.updateTweet(tweetsService: TweetService) {
     put("/tweets") {
         val updateTweetDto: UpdateTweetDto = getWithCheck { call.receive() } ?: return@put call.respond(
             status = HttpStatusCode.BadRequest,
-            message = Response(HttpStatusCode.BadRequest.value)
+            message = Response(HttpStatusCode.BadRequest.value, "")
         )
         val tweetId = tweetsService.getByEditorId(updateTweetDto.editorId)?.id ?: return@put call.respond(
             status = HttpStatusCode.BadRequest,
-            message = Response(HttpStatusCode.BadRequest.value)
+            message = Response(HttpStatusCode.BadRequest.value, "")
         )
         val updatedTweet = tweetsService.update(
             tweetId = tweetId,
@@ -130,7 +138,7 @@ private fun Route.updateTweet(tweetsService: TweetService) {
             onIncorrect = {
                 call.respond(
                     status = HttpStatusCode.BadRequest,
-                    message = Response(HttpStatusCode.BadRequest.value)
+                    message = Response(HttpStatusCode.BadRequest.value, "")
                 )
             }
         )

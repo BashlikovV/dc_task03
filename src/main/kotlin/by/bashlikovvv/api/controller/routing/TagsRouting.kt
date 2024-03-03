@@ -31,7 +31,10 @@ private fun Route.getTags(tagsService: TagService) {
             isCorrect = { tags.isNotEmpty() },
             onCorrect = { call.respond(status = HttpStatusCode.OK, tags) },
             onIncorrect = {
-                call.respond(status = HttpStatusCode.OK, Response(HttpStatusCode.OK.value))
+                call.respond(
+                    status = HttpStatusCode.OK,
+                    message = Response(HttpStatusCode.OK.value, "")
+                )
             }
         )
     }
@@ -40,10 +43,12 @@ private fun Route.getTags(tagsService: TagService) {
 private fun Route.createTag(tagsService: TagService) {
     post("/tags") {
         val createTagDto: CreateTagDto = getWithCheck { call.receive() } ?: return@post call.respond(
-            HttpStatusCode.BadRequest, Response(HttpStatusCode.BadRequest.value)
+            status = HttpStatusCode.BadRequest,
+            message = Response(HttpStatusCode.BadRequest.value, "")
         )
         val addedTag = getWithCheck { tagsService.create(createTagDto) } ?: return@post call.respond(
-            status = HttpStatusCode.Forbidden, Response(HttpStatusCode.Forbidden.value)
+            status = HttpStatusCode.Forbidden,
+            message = Response(HttpStatusCode.Forbidden.value, "")
         )
 
         call.respond(
@@ -57,19 +62,22 @@ private fun Route.deleteTagById(tagsService: TagService) {
     delete("/tags/{id?}") {
         val id = call.parameters["id"] ?: return@delete call.respond(
             status = HttpStatusCode.BadRequest,
-            message = Response(HttpStatusCode.BadRequest.value)
+            message = Response(HttpStatusCode.BadRequest.value, "")
         )
         val removedItem = tagsService.delete(id.toLong())
 
         respond(
             isCorrect = { removedItem },
             onCorrect = {
-                call.respond(status = HttpStatusCode.NoContent, Response(HttpStatusCode.OK.value))
+                call.respond(
+                    status = HttpStatusCode.NoContent,
+                    message = Response(HttpStatusCode.OK.value, "")
+                )
             },
             onIncorrect = {
                 call.respond(
                     status = HttpStatusCode.BadRequest,
-                    message = Response(HttpStatusCode.BadRequest.value)
+                    message = Response(HttpStatusCode.BadRequest.value, "")
                 )
             }
         )
@@ -80,7 +88,7 @@ private fun Route.getTagById(tagsService: TagService) {
     get("/tags/{id?}") {
         val id = call.parameters["id"] ?: return@get call.respond(
             status = HttpStatusCode.BadRequest,
-            message = Response(HttpStatusCode.BadRequest.value)
+            message = Response(HttpStatusCode.BadRequest.value, "")
         )
         val requestedItem = tagsService.getById(id.toLong())
 
@@ -92,7 +100,7 @@ private fun Route.getTagById(tagsService: TagService) {
             onIncorrect = {
                 call.respond(
                     status = HttpStatusCode.BadRequest,
-                    message = Response(HttpStatusCode.BadRequest.value)
+                    message = Response(HttpStatusCode.BadRequest.value, "")
                 )
             }
         )
@@ -103,7 +111,7 @@ private fun Route.updateTag(tagsService: TagService) {
     put("/tags") {
         val updateTagDto: UpdateTagDto = getWithCheck { call.receive() } ?: return@put call.respond(
             status = HttpStatusCode.BadRequest,
-            message = Response(HttpStatusCode.BadRequest.value)
+            message = Response(HttpStatusCode.BadRequest.value, "")
         )
         val updatedTag = tagsService.update(
             tagId = updateTagDto.id,
@@ -121,7 +129,7 @@ private fun Route.updateTag(tagsService: TagService) {
             onIncorrect = {
                 call.respond(
                     status = HttpStatusCode.BadRequest,
-                    message = Response(HttpStatusCode.BadRequest.value)
+                    message = Response(HttpStatusCode.BadRequest.value, "")
                 )
             }
         )

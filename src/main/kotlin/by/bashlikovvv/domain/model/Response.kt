@@ -3,4 +3,7 @@ package by.bashlikovvv.domain.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Response(val statusCode: Int)
+data class Response<T>(
+    val statusCode: Int,
+    val message: T? = null
+)
