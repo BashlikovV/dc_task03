@@ -1,12 +1,12 @@
 package by.bashlikovvv.data.mapper
 
 import by.bashlikovvv.api.dto.request.UpdateEditorDto
-import by.bashlikovvv.domain.model.Editor
+import by.bashlikovvv.data.local.model.EditorEntity
 import by.bashlikovvv.util.IMapper
 
-class UpdateEditorDtoToEditorMapper : IMapper<UpdateEditorDto, Editor> {
-    override fun mapFromEntity(entity: UpdateEditorDto): Editor {
-        return Editor(
+class UpdateEditorDtoToEditorMapper : IMapper<UpdateEditorDto, EditorEntity> {
+    override fun mapFromEntity(entity: UpdateEditorDto): EditorEntity {
+        return EditorEntity(
             id = entity.id,
             login = entity.login,
             password = entity.password,
@@ -15,7 +15,7 @@ class UpdateEditorDtoToEditorMapper : IMapper<UpdateEditorDto, Editor> {
         )
     }
 
-    override fun mapToEntity(domain: Editor): UpdateEditorDto {
+    override fun mapToEntity(domain: EditorEntity): UpdateEditorDto {
         return UpdateEditorDto(
             id = domain.id,
             login = domain.login,

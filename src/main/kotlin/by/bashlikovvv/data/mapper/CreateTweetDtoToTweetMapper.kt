@@ -1,18 +1,18 @@
 package by.bashlikovvv.data.mapper
 
 import by.bashlikovvv.api.dto.request.CreateTweetDto
-import by.bashlikovvv.domain.model.Tweet
+import by.bashlikovvv.data.local.model.TweetEntity
 import by.bashlikovvv.util.IMapper
 import java.sql.Timestamp
 
 class CreateTweetDtoToTweetMapper(
     private val id: Long? = null,
     private val name: String? = null
-) : IMapper<CreateTweetDto, Tweet> {
-    override fun mapFromEntity(entity: CreateTweetDto): Tweet {
+) : IMapper<CreateTweetDto, TweetEntity> {
+    override fun mapFromEntity(entity: CreateTweetDto): TweetEntity {
         val created = Timestamp(System.currentTimeMillis())
 
-        return Tweet(
+        return TweetEntity(
             id = id ?: 0,
             editorId = entity.editorId,
             title = entity.title,
@@ -22,7 +22,7 @@ class CreateTweetDtoToTweetMapper(
         )
     }
 
-    override fun mapToEntity(domain: Tweet): CreateTweetDto {
+    override fun mapToEntity(domain: TweetEntity): CreateTweetDto {
         return CreateTweetDto(
             editorId = domain.editorId,
             title = domain.title,

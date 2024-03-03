@@ -1,10 +1,11 @@
 package by.bashlikovvv.data.local.dao
 
-import java.sql.Connection
 import by.bashlikovvv.data.local.contract.DatabaseContract.EditorsTable
-import by.bashlikovvv.domain.model.Editor
+import by.bashlikovvv.data.local.model.EditorEntity
+import by.bashlikovvv.domain.exception.DataSourceExceptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.sql.Connection
 import java.sql.Statement
 
 class EditorOfflineSource(private val connection: Connection) {
@@ -65,13 +66,13 @@ class EditorOfflineSource(private val connection: Connection) {
         statement.executeUpdate(CREATE_TABLE_EDITORS)
     }
 
-    suspend fun create(editor: Editor): Long = withContext(Dispatchers.IO) {
+    suspend fun create(editorEntity: EditorEntity): Long = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(INSERT_EDITOR, Statement.RETURN_GENERATED_KEYS)
         statement.apply {
-            setString(1, editor.login)
-            setString(2, editor.password)
-            setString(3, editor.firstname)
-            setString(4, editor.lastname)
+            setString(1, editorEntity.login)
+            setString(2, editorEntity.password)
+            setString(3, editorEntity.firstname)
+            setString(4, editorEntity.lastname)
             executeUpdate()
         }
 
@@ -79,11 +80,11 @@ class EditorOfflineSource(private val connection: Connection) {
         if (generatedKeys.next()) {
             return@withContext generatedKeys.getLong(1)
         } else {
-            throw Exception("Unable to retrieve the id of the newly inserted editor")
+            throw DataSourceExceptions.RecordCreationException("Unable to retrieve the id of the newly inserted editor")
         }
     }
 
-    suspend fun read(id: Long): Editor = withContext(Dispatchers.IO) {
+    suspend fun read(id: Long): EditorEntity = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(SELECT_EDITOR_BY_ID)
         statement.setLong(1, id)
 
@@ -93,7 +94,7 @@ class EditorOfflineSource(private val connection: Connection) {
             val password = resultSet.getString(EditorsTable.COLUMN_PASSWORD)
             val firstname = resultSet.getString(EditorsTable.COLUMN_FIRSTNAME)
             val lastname = resultSet.getString(EditorsTable.COLUMN_LASTNAME)
-            return@withContext Editor(
+            return@withContext EditorEntity(
                 id = id,
                 login = login,
                 password = password,
@@ -101,12 +102,12 @@ class EditorOfflineSource(private val connection: Connection) {
                 lastname = lastname
             )
         } else {
-            throw Exception("Editor record not found")
+            throw DataSourceExceptions.RecordNotFoundException("Editor record not found")
         }
     }
 
-    suspend fun readAll(): List<Editor?> = withContext(Dispatchers.IO) {
-        val result = mutableListOf<Editor>()
+    suspend fun readAll(): List<EditorEntity?> = withContext(Dispatchers.IO) {
+        val result = mutableListOf<EditorEntity>()
         val statement = connection.prepareStatement(SELECT_EDITORS)
 
         val resultSet = statement.executeQuery()
@@ -117,7 +118,7 @@ class EditorOfflineSource(private val connection: Connection) {
             val firstname = resultSet.getString(EditorsTable.COLUMN_FIRSTNAME)
             val lastname = resultSet.getString(EditorsTable.COLUMN_LASTNAME)
             result.add(
-                Editor(
+                EditorEntity(
                     id = id,
                     login = login,
                     password = password,
@@ -130,22 +131,32 @@ class EditorOfflineSource(private val connection: Connection) {
         result
     }
 
-    suspend fun update(id: Long, editor: Editor) = withContext(Dispatchers.IO) {
+    suspend fun update(id: Long, editorEntity: EditorEntity) = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(UPDATE_EDITOR)
         statement.apply {
-            setString(1, editor.login)
-            setString(2, editor.password)
-            setString(3, editor.firstname)
-            setString(4, editor.lastname)
+            setString(1, editorEntity.login)
+            setString(2, editorEntity.password)
+            setString(3, editorEntity.firstname)
+            setString(4, editorEntity.lastname)
             setLong(5, id)
-        }.executeUpdate()
+        }
+
+        return@withContext try {
+            statement.executeUpdate()
+        } catch (e: Exception) {
+            throw DataSourceExceptions.RecordModificationException("Can not modify editor record")
+        }
     }
 
     suspend fun delete(id: Long) = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(DELETE_EDITOR)
-        statement.apply {
-            setLong(1, id)
-        }.executeUpdate()
+        statement.setLong(1, id)
+
+        return@withContext try {
+            statement.executeUpdate()
+        } catch (e: Exception) {
+            throw DataSourceExceptions.RecordDeletionException("Can not delete editor record")
+        }
     }
 
 }

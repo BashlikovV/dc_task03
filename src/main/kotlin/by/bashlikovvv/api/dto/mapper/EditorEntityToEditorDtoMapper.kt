@@ -1,15 +1,13 @@
-package by.bashlikovvv.data.mapper
+package by.bashlikovvv.api.dto.mapper
 
-import by.bashlikovvv.api.dto.request.CreateEditorDto
+import by.bashlikovvv.api.dto.response.EditorDto
 import by.bashlikovvv.data.local.model.EditorEntity
 import by.bashlikovvv.util.IMapper
 
-class CreateEditorDtoToEditorMapper(
-    private val id: Long? = null
-) : IMapper<CreateEditorDto, EditorEntity> {
-    override fun mapFromEntity(entity: CreateEditorDto): EditorEntity {
-        return EditorEntity(
-            id = id ?: 0,
+class EditorEntityToEditorDtoMapper : IMapper<EditorEntity, EditorDto> {
+    override fun mapFromEntity(entity: EditorEntity): EditorDto {
+        return EditorDto(
+            id = entity.id,
             login = entity.login,
             password = entity.password,
             firstname = entity.firstname,
@@ -17,8 +15,9 @@ class CreateEditorDtoToEditorMapper(
         )
     }
 
-    override fun mapToEntity(domain: EditorEntity): CreateEditorDto {
-        return CreateEditorDto(
+    override fun mapToEntity(domain: EditorDto): EditorEntity {
+        return EditorEntity(
+            id = domain.id,
             login = domain.login,
             password = domain.password,
             firstname = domain.firstname,

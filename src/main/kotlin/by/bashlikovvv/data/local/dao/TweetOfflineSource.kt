@@ -1,8 +1,9 @@
 package by.bashlikovvv.data.local.dao
 
-import by.bashlikovvv.data.local.contract.DatabaseContract.TweetsTable
 import by.bashlikovvv.data.local.contract.DatabaseContract.EditorsTable
-import by.bashlikovvv.domain.model.Tweet
+import by.bashlikovvv.data.local.contract.DatabaseContract.TweetsTable
+import by.bashlikovvv.data.local.model.TweetEntity
+import by.bashlikovvv.domain.exception.DataSourceExceptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.sql.Connection
@@ -84,7 +85,7 @@ class TweetOfflineSource(private val connection: Connection) {
         statement.executeUpdate(CREATE_TABLE_TWEETS)
     }
 
-    suspend fun create(tweet: Tweet): Long = withContext(Dispatchers.IO) {
+    suspend fun create(tweet: TweetEntity): Long = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(INSERT_TWEET, Statement.RETURN_GENERATED_KEYS)
         statement.apply {
             setLong(1, tweet.editorId)
@@ -99,11 +100,11 @@ class TweetOfflineSource(private val connection: Connection) {
         if (generatedKeys.next()) {
             return@withContext generatedKeys.getLong(1)
         } else {
-            throw Exception("Unable to retrieve the id of the newly inserted tweet")
+            throw DataSourceExceptions.RecordCreationException("Unable to retrieve the id of the newly inserted tweet")
         }
     }
 
-    suspend fun read(id: Long): Tweet = withContext(Dispatchers.IO) {
+    suspend fun read(id: Long): TweetEntity = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(SELECT_TWEET_BY_ID)
         statement.setLong(1, id)
 
@@ -114,7 +115,7 @@ class TweetOfflineSource(private val connection: Connection) {
             val content = resultSet.getString(TweetsTable.COLUMN_CONTENT)
             val created = resultSet.getTimestamp(TweetsTable.COLUMN_CREATED)
             val modified = resultSet.getTimestamp(TweetsTable.COLUMN_MODIFIED)
-            return@withContext Tweet(
+            return@withContext TweetEntity(
                 id = id,
                 editorId = editorId,
                 title = title,
@@ -123,12 +124,12 @@ class TweetOfflineSource(private val connection: Connection) {
                 modified = modified
             )
         } else {
-            throw Exception("Editor record not found")
+            throw DataSourceExceptions.RecordNotFoundException("Editor record not found")
         }
     }
 
-    suspend fun readAll(): List<Tweet?> = withContext(Dispatchers.IO) {
-        val result = mutableListOf<Tweet>()
+    suspend fun readAll(): List<TweetEntity?> = withContext(Dispatchers.IO) {
+        val result = mutableListOf<TweetEntity>()
         val statement = connection.prepareStatement(SELECT_TWEETS)
 
         val resultSet = statement.executeQuery()
@@ -140,7 +141,7 @@ class TweetOfflineSource(private val connection: Connection) {
             val created = resultSet.getTimestamp(TweetsTable.COLUMN_CREATED)
             val modified = resultSet.getTimestamp(TweetsTable.COLUMN_MODIFIED)
             result.add(
-                Tweet(
+                TweetEntity(
                     id = id,
                     editorId = editorId,
                     title = title,
@@ -154,8 +155,8 @@ class TweetOfflineSource(private val connection: Connection) {
         result
     }
 
-    suspend fun readByEditorId(editorId: Long): List<Tweet?> = withContext(Dispatchers.IO) {
-        val result = mutableListOf<Tweet>()
+    suspend fun readByEditorId(editorId: Long): List<TweetEntity?> = withContext(Dispatchers.IO) {
+        val result = mutableListOf<TweetEntity>()
         val statement = connection.prepareStatement(SELECT_TWEETS_BY_EDITOR_ID)
         statement.setLong(1, editorId)
 
@@ -167,7 +168,7 @@ class TweetOfflineSource(private val connection: Connection) {
             val created = resultSet.getTimestamp(TweetsTable.COLUMN_CREATED)
             val modified = resultSet.getTimestamp(TweetsTable.COLUMN_MODIFIED)
             result.add(
-                Tweet(
+                TweetEntity(
                     id = id,
                     editorId = editorId,
                     title = title,
@@ -181,7 +182,7 @@ class TweetOfflineSource(private val connection: Connection) {
         result
     }
 
-    suspend fun update(id: Long, tweet: Tweet) = withContext(Dispatchers.IO) {
+    suspend fun update(id: Long, tweet: TweetEntity) = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(UPDATE_TWEET)
         statement.apply {
             setLong(1, tweet.editorId)
@@ -190,14 +191,24 @@ class TweetOfflineSource(private val connection: Connection) {
             setTimestamp(4, tweet.created)
             setTimestamp(5, tweet.modified)
             setLong(6, id)
-        }.executeUpdate()
+        }
+
+        return@withContext try {
+            statement.executeUpdate()
+        } catch (e: Exception) {
+            throw DataSourceExceptions.RecordModificationException("Can not modify tweet record")
+        }
     }
 
     suspend fun delete(id: Long) = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(DELETE_TWEET)
-        statement.apply {
-            setLong(1, id)
-        }.executeUpdate()
+        statement.setLong(1, id)
+
+        return@withContext try {
+            statement.executeUpdate()
+        } catch (e: Exception) {
+            throw DataSourceExceptions.RecordDeletionException("Can not delete tweet record")
+        }
     }
 
 }

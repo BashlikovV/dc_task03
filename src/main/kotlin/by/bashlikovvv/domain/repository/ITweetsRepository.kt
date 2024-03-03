@@ -1,19 +1,19 @@
 package by.bashlikovvv.domain.repository
 
-import by.bashlikovvv.domain.model.Tweet
+import by.bashlikovvv.data.local.model.TweetEntity
 
 interface ITweetsRepository {
 
-    suspend fun create(tweet: Tweet): Long
+    suspend fun create(tweet: TweetEntity): Long
 
-    suspend fun read(id: Long): Tweet?
+    suspend fun read(id: Long): TweetEntity?
 
-    suspend fun readAll(): List<Tweet?>
+    suspend fun readAll(): List<TweetEntity?>
 
-    suspend fun readBYEditorId(editorId: Long): List<Tweet?>
+    suspend fun readBYEditorId(editorId: Long): List<TweetEntity?>
 
-    suspend fun update(id: Long, tweet: Tweet): Int
+    suspend fun update(id: Long, tweet: TweetEntity): Boolean
 
-    suspend fun delete(id: Long): Int
+    suspend fun delete(id: Long): Boolean
 
 }

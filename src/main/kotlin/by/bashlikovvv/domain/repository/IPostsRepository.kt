@@ -1,16 +1,16 @@
 package by.bashlikovvv.domain.repository
 
-import by.bashlikovvv.domain.model.Post
+import by.bashlikovvv.data.local.model.PostEntity
 
 interface IPostsRepository {
 
-    suspend fun create(post: Post): Long
+    suspend fun create(postEntity: PostEntity): Long
 
-    suspend fun read(id: Long): Post?
+    suspend fun read(id: Long): PostEntity?
 
-    suspend fun readAll(): List<Post?>
+    suspend fun readAll(): List<PostEntity?>
 
-    suspend fun update(id: Long, post: Post): Boolean
+    suspend fun update(id: Long, postEntity: PostEntity): Boolean
 
     suspend fun delete(id: Long): Boolean
 

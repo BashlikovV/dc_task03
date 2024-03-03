@@ -1,9 +1,9 @@
-package by.bashlikovvv.domain.model
+package by.bashlikovvv.data.local.model
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Editor(
+data class EditorEntity(
     val id: Long,
     val login: String,
     val password: String,

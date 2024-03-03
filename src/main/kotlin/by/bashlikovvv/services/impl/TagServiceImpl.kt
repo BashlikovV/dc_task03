@@ -1,38 +1,47 @@
 package by.bashlikovvv.services.impl
 
+import by.bashlikovvv.api.dto.mapper.TagEntityToTagDtoMapper
 import by.bashlikovvv.api.dto.request.CreateTagDto
 import by.bashlikovvv.api.dto.request.UpdateTagDto
+import by.bashlikovvv.api.dto.response.TagDto
 import by.bashlikovvv.data.mapper.CreateTagDtoToTagMapper
 import by.bashlikovvv.data.mapper.UpdateTagDtoToTagMapper
-import by.bashlikovvv.domain.model.Tag
+import by.bashlikovvv.domain.exception.ApplicationExceptions
 import by.bashlikovvv.domain.repository.ITagsRepository
 import by.bashlikovvv.services.TagService
 
 class TagServiceImpl(
     private val tagsRepository: ITagsRepository
 ) : TagService {
-    override suspend fun create(createTagDto: CreateTagDto): Tag {
-        val tag = CreateTagDtoToTagMapper().mapFromEntity(createTagDto)
-        val id = tagsRepository.create(tag)
 
-        return tag.copy(id = id)
+    private val mapper = TagEntityToTagDtoMapper()
+
+    override suspend fun create(createTagDto: CreateTagDto): TagDto {
+        val tagEntity = CreateTagDtoToTagMapper().mapFromEntity(createTagDto)
+        val id = tagsRepository.create(tagEntity)
+
+        return mapper.mapFromEntity(tagEntity.copy(id = id))
     }
 
-    override suspend fun getAll(): List<Tag?> {
+    override suspend fun getAll(): List<TagDto?> {
         return tagsRepository.readAll()
+            .filterNotNull()
+            .map { mapper.mapFromEntity(it) }
     }
 
-    override suspend fun getById(tagId: Long): Tag? {
-        return tagsRepository.read(tagId)
+    override suspend fun getById(tagId: Long): TagDto? {
+        val tagEntity = tagsRepository.read(tagId) ?: return null
+
+        return mapper.mapFromEntity(tagEntity)
     }
 
-    override suspend fun update(tagId: Long, updateTagDto: UpdateTagDto): Tag {
-        val tag = UpdateTagDtoToTagMapper().mapFromEntity(updateTagDto)
-        if (!tagsRepository.update(tagId, tag)) {
-
+    override suspend fun update(tagId: Long, updateTagDto: UpdateTagDto): TagDto {
+        val tagEntity = UpdateTagDtoToTagMapper().mapFromEntity(updateTagDto)
+        if (!tagsRepository.update(tagId, tagEntity)) {
+            throw ApplicationExceptions.UpdateException("Exception during tag updating")
         }
 
-        return tag
+        return mapper.mapFromEntity(tagEntity)
     }
 
     override suspend fun delete(tagId: Long): Boolean {

@@ -2,7 +2,8 @@ package by.bashlikovvv.data.local.dao
 
 import by.bashlikovvv.data.local.contract.DatabaseContract.PostsTable
 import by.bashlikovvv.data.local.contract.DatabaseContract.TweetsTable
-import by.bashlikovvv.domain.model.Post
+import by.bashlikovvv.data.local.model.PostEntity
+import by.bashlikovvv.domain.exception.DataSourceExceptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.sql.Connection
@@ -59,11 +60,11 @@ class PostOfflineSource(private val connection: Connection) {
         statement.executeUpdate(CREATE_TABLE_POSTS)
     }
 
-    suspend fun create(post: Post): Long = withContext(Dispatchers.IO) {
+    suspend fun create(postEntity: PostEntity): Long = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(INSERT_POST, Statement.RETURN_GENERATED_KEYS)
         statement.apply {
-            setLong(1, post.tweetId)
-            setString(2, post.content)
+            setLong(1, postEntity.tweetId)
+            setString(2, postEntity.content)
             executeUpdate()
         }
 
@@ -71,11 +72,11 @@ class PostOfflineSource(private val connection: Connection) {
         if (generatedKeys.next()) {
             return@withContext generatedKeys.getLong(1)
         } else {
-            throw Exception("Unable to retrieve the id of the newly inserted post")
+            throw DataSourceExceptions.RecordCreationException("Unable to retrieve the id of the newly inserted post")
         }
     }
 
-    suspend fun read(id: Long): Post = withContext(Dispatchers.IO) {
+    suspend fun read(id: Long): PostEntity = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(SELECT_POST_BY_ID)
         statement.setLong(1, id)
 
@@ -83,18 +84,18 @@ class PostOfflineSource(private val connection: Connection) {
         if (resultSet.next()) {
             val tweetId = resultSet.getLong(PostsTable.COLUMN_TWEET_ID)
             val content = resultSet.getString(PostsTable.COLUMN_CONTENT)
-            return@withContext Post(
+            return@withContext PostEntity(
                 id = id,
                 tweetId = tweetId,
                 content = content
             )
         } else {
-            throw Exception("Post record not found")
+            throw DataSourceExceptions.RecordNotFoundException("Post record not found")
         }
     }
 
-    suspend fun readAll(): List<Post> = withContext(Dispatchers.IO) {
-        val result = mutableListOf<Post>()
+    suspend fun readAll(): List<PostEntity> = withContext(Dispatchers.IO) {
+        val result = mutableListOf<PostEntity>()
         val statement = connection.prepareStatement(SELECT_POSTS)
 
         val resultSet = statement.executeQuery()
@@ -103,7 +104,7 @@ class PostOfflineSource(private val connection: Connection) {
             val tweetId = resultSet.getLong(PostsTable.COLUMN_TWEET_ID)
             val content = resultSet.getString(PostsTable.COLUMN_CONTENT)
             result.add(
-                Post(
+                PostEntity(
                     id = id,
                     tweetId = tweetId,
                     content = content
@@ -114,20 +115,30 @@ class PostOfflineSource(private val connection: Connection) {
         result
     }
 
-    suspend fun update(id: Long, post: Post) = withContext(Dispatchers.IO) {
+    suspend fun update(id: Long, postEntity: PostEntity) = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(UPDATE_POST)
         statement.apply {
-            setLong(1, post.tweetId)
-            setString(2, post.content)
+            setLong(1, postEntity.tweetId)
+            setString(2, postEntity.content)
             setLong(3, id)
-        }.executeUpdate()
+        }
+
+        return@withContext try {
+            statement.executeUpdate()
+        } catch (e: Exception) {
+            throw DataSourceExceptions.RecordModificationException("Can not modify post record")
+        }
     }
 
     suspend fun delete(id: Long) = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(DELETE_POST)
-        statement.apply {
-            setLong(1, id)
-        }.executeUpdate()
+        statement.setLong(1, id)
+
+        return@withContext try {
+            statement.executeUpdate()
+        } catch (e: Exception) {
+            throw DataSourceExceptions.RecordDeletionException("Can not delete post record")
+        }
     }
 
 }

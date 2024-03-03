@@ -1,45 +1,58 @@
 package by.bashlikovvv.services.impl
 
+import by.bashlikovvv.api.dto.mapper.TweetEntityToTweetDtoMapper
 import by.bashlikovvv.api.dto.request.CreateTweetDto
 import by.bashlikovvv.api.dto.request.UpdateTweetDto
+import by.bashlikovvv.api.dto.response.TweetDto
 import by.bashlikovvv.data.mapper.CreateTweetDtoToTweetMapper
 import by.bashlikovvv.data.mapper.UpdateTweetDtoToTweetMapper
-import by.bashlikovvv.domain.model.Tweet
+import by.bashlikovvv.domain.exception.ApplicationExceptions
 import by.bashlikovvv.domain.repository.ITweetsRepository
 import by.bashlikovvv.services.TweetService
 
 class TweetServiceImpl(
     private val tweetRepository: ITweetsRepository
 ) : TweetService {
-    override suspend  fun create(createTweetDto: CreateTweetDto): Tweet {
-        val tweet = CreateTweetDtoToTweetMapper().mapFromEntity(createTweetDto)
-        val id = tweetRepository.create(tweet)
 
-        return tweet.copy(id = id)
+    private val mapper = TweetEntityToTweetDtoMapper()
+
+    override suspend  fun create(createTweetDto: CreateTweetDto): TweetDto {
+        val tweetEntity = CreateTweetDtoToTweetMapper().mapFromEntity(createTweetDto)
+        val id = tweetRepository.create(tweetEntity)
+
+        return mapper.mapFromEntity(tweetEntity.copy(id = id))
     }
 
-    override suspend  fun getAll(): List<Tweet?> {
+    override suspend  fun getAll(): List<TweetDto?> {
         return tweetRepository.readAll()
+            .filterNotNull()
+            .map { mapper.mapFromEntity(it) }
     }
 
-    override suspend  fun getById(tweetId: Long): Tweet? {
-        return tweetRepository.read(tweetId)
+    override suspend  fun getById(tweetId: Long): TweetDto? {
+        val tweetEntity = tweetRepository.read(tweetId) ?: return null
+
+        return mapper.mapFromEntity(tweetEntity)
     }
 
-    override suspend  fun getByEditorId(editorId: Long): Tweet? {
-        return tweetRepository.readBYEditorId(editorId).first()
+    override suspend  fun getByEditorId(editorId: Long): TweetDto? {
+        val tweetEntity = tweetRepository.readBYEditorId(editorId).first() ?: return null
+
+        return mapper.mapFromEntity(tweetEntity)
     }
 
-    override suspend  fun update(tweetId: Long, updateTweetDto: UpdateTweetDto): Tweet? {
-        var tweet = tweetRepository.read(tweetId) ?: return null
-        tweet = UpdateTweetDtoToTweetMapper(tweet).mapFromEntity(updateTweetDto)
-        tweetRepository.update(tweetId, tweet)
+    override suspend  fun update(tweetId: Long, updateTweetDto: UpdateTweetDto): TweetDto? {
+        var tweetEntity = tweetRepository.read(tweetId) ?: return null
+        tweetEntity = UpdateTweetDtoToTweetMapper(tweetEntity).mapFromEntity(updateTweetDto)
+        if (!tweetRepository.update(tweetId, tweetEntity)) {
+            throw ApplicationExceptions.UpdateException("Exception during tweet updating")
+        }
 
-        return tweet
+        return mapper.mapFromEntity(tweetEntity)
     }
 
     override suspend  fun delete(tweetId: Long): Boolean {
-        return tweetRepository.delete(tweetId) > 0
+        return tweetRepository.delete(tweetId)
     }
 
 }

@@ -1,7 +1,8 @@
 package by.bashlikovvv.data.local.dao
 
 import by.bashlikovvv.data.local.contract.DatabaseContract.TagsTable
-import by.bashlikovvv.domain.model.Tag
+import by.bashlikovvv.data.local.model.TagEntity
+import by.bashlikovvv.domain.exception.DataSourceExceptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.sql.Connection
@@ -51,10 +52,10 @@ class TagOfflineSource(private val connection: Connection) {
         statement.executeUpdate(CREATE_TABLE_TAGS)
     }
 
-    suspend fun create(tag: Tag): Long = withContext(Dispatchers.IO) {
+    suspend fun create(tagEntity: TagEntity): Long = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(INSERT_TAG, Statement.RETURN_GENERATED_KEYS)
         statement.apply {
-            setString(1, tag.name)
+            setString(1, tagEntity.name)
             executeUpdate()
         }
 
@@ -62,27 +63,27 @@ class TagOfflineSource(private val connection: Connection) {
         if (generatedKeys.next()) {
             return@withContext generatedKeys.getLong(1)
         } else {
-            throw Exception("Unable to retrieve the id of the newly inserted tag")
+            throw DataSourceExceptions.RecordCreationException("Unable to retrieve the id of the newly inserted tag")
         }
     }
 
-    suspend fun read(id: Long): Tag = withContext(Dispatchers.IO) {
+    suspend fun read(id: Long): TagEntity = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(SELECT_TAG_BY_ID)
         statement.setLong(1, id)
 
         val resultSet = statement.executeQuery()
         if (resultSet.next()) {
             val name = resultSet.getString(TagsTable.COLUMN_NAME)
-            return@withContext Tag(
+            return@withContext TagEntity(
                 id = id, name = name
             )
         } else {
-            throw Exception("Tag record not found")
+            throw DataSourceExceptions.RecordNotFoundException("Tag record not found")
         }
     }
 
-    suspend fun readAll(): List<Tag> = withContext(Dispatchers.IO) {
-        val result = mutableListOf<Tag>()
+    suspend fun readAll(): List<TagEntity> = withContext(Dispatchers.IO) {
+        val result = mutableListOf<TagEntity>()
         val statement = connection.prepareStatement(SELECT_TAGS)
 
         val resultSet = statement.executeQuery()
@@ -90,7 +91,7 @@ class TagOfflineSource(private val connection: Connection) {
             val id = resultSet.getLong(TagsTable.COLUMN_ID)
             val name = resultSet.getString(TagsTable.COLUMN_NAME)
             result.add(
-                Tag(
+                TagEntity(
                     id = id,
                     name = name
                 )
@@ -100,19 +101,29 @@ class TagOfflineSource(private val connection: Connection) {
         result
     }
 
-    suspend fun update(id: Long, tag: Tag) = withContext(Dispatchers.IO) {
+    suspend fun update(id: Long, tagEntity: TagEntity) = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(UPDATE_TAG)
         statement.apply {
-            setString(1, tag.name)
+            setString(1, tagEntity.name)
             setLong(2, id)
-        }.executeUpdate()
+        }
+
+        return@withContext try {
+            statement.executeUpdate()
+        } catch (e: Exception) {
+            throw DataSourceExceptions.RecordModificationException("Can not modify tag record")
+        }
     }
 
     suspend fun delete(id: Long) = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(DELETE_TAG)
-        statement.apply {
-            setLong(1, id)
-        }.executeUpdate()
+        statement.setLong(1, id)
+
+        return@withContext try {
+            statement.executeUpdate()
+        } catch (e: Exception) {
+            throw DataSourceExceptions.RecordDeletionException("Can not delete tag record")
+        }
     }
 
 }

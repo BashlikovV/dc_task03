@@ -1,17 +1,17 @@
 package by.bashlikovvv.data.repository
 
 import by.bashlikovvv.data.local.dao.TagOfflineSource
-import by.bashlikovvv.domain.model.Tag
+import by.bashlikovvv.data.local.model.TagEntity
 import by.bashlikovvv.domain.repository.ITagsRepository
 
 class TagsRepository(
     private val tagOfflineSource: TagOfflineSource
 ) : ITagsRepository {
-    override suspend fun create(tag: Tag): Long {
-        return tagOfflineSource.create(tag)
+    override suspend fun create(tagEntity: TagEntity): Long {
+        return tagOfflineSource.create(tagEntity)
     }
 
-    override suspend fun read(id: Long): Tag? {
+    override suspend fun read(id: Long): TagEntity? {
         return try {
             tagOfflineSource.read(id)
         } catch (e: Exception) {
@@ -19,12 +19,12 @@ class TagsRepository(
         }
     }
 
-    override suspend fun readAll(): List<Tag?> {
+    override suspend fun readAll(): List<TagEntity?> {
         return tagOfflineSource.readAll()
     }
 
-    override suspend fun update(id: Long, tag: Tag): Boolean {
-        return tagOfflineSource.update(id, tag) > 0
+    override suspend fun update(id: Long, tagEntity: TagEntity): Boolean {
+        return tagOfflineSource.update(id, tagEntity) > 0
     }
 
     override suspend fun delete(id: Long): Boolean {

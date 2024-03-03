@@ -1,14 +1,14 @@
 package by.bashlikovvv.data.mapper
 
 import by.bashlikovvv.api.dto.request.UpdateTweetDto
-import by.bashlikovvv.domain.model.Tweet
+import by.bashlikovvv.data.local.model.TweetEntity
 import by.bashlikovvv.util.IMapper
 
 class UpdateTweetDtoToTweetMapper(
-    private val tweet: Tweet
-) : IMapper<UpdateTweetDto, Tweet> {
-    override fun mapFromEntity(entity: UpdateTweetDto): Tweet {
-        return Tweet(
+    private val tweet: TweetEntity
+) : IMapper<UpdateTweetDto, TweetEntity> {
+    override fun mapFromEntity(entity: UpdateTweetDto): TweetEntity {
+        return TweetEntity(
             id = tweet.id,
             editorId = entity.editorId,
             title = entity.title,
@@ -18,7 +18,7 @@ class UpdateTweetDtoToTweetMapper(
         )
     }
 
-    override fun mapToEntity(domain: Tweet): UpdateTweetDto {
+    override fun mapToEntity(domain: TweetEntity): UpdateTweetDto {
         TODO("Not yet implemented")
     }
 }

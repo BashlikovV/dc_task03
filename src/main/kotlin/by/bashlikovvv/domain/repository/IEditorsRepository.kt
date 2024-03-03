@@ -1,17 +1,17 @@
 package by.bashlikovvv.domain.repository
 
-import by.bashlikovvv.domain.model.Editor
+import by.bashlikovvv.data.local.model.EditorEntity
 
 interface IEditorsRepository {
 
-    suspend fun create(editor: Editor): Long
+    suspend fun create(editorEntity: EditorEntity): Long
 
-    suspend fun read(id: Long): Editor?
+    suspend fun read(id: Long): EditorEntity?
 
-    suspend fun readAll(): List<Editor?>
+    suspend fun readAll(): List<EditorEntity?>
 
-    suspend fun update(id: Long, editor: Editor): Int
+    suspend fun update(id: Long, editorEntity: EditorEntity): Boolean
 
-    suspend fun delete(id: Long): Int
+    suspend fun delete(id: Long): Boolean
 
 }
