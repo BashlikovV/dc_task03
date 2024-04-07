@@ -1,6 +1,6 @@
 package by.bashlikovvv
 
-import by.bashlikovvv.api.controller.configureRouting
+import api.controller.configureRouting
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
